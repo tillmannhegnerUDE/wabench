@@ -10,7 +10,7 @@ ifeq (${SRCSUFFIX}, $(filter ${SRCSUFFIX}, cc cpp))
     CLANG = clang++
 endif
 
-CC = ${HOME}/llvm/llvm-10.0.0.prefix/bin/${CLANG}
+CC = /usr/bin/${CLANG}
 
 OPT=-O2
 

@@ -1,12 +1,12 @@
 Wasm=$Native.wasm
 WasmAOT=$Native.cwasm
 
-Wasmtime="$HOME/runtimes/wasmtime/target/release/wasmtime"
-WAVM="$HOME/runtimes/WAVM/build/bin/wavm"
+Wasmtime="$HOME/.wasmtime/bin/wasmtime"
+WAVM="$HOME/.wavm/bin/wavm"
 #Wasmer="$HOME/runtimes/wasmer/target/release/wasmer"
 Wasmer="$HOME/.wasmer/bin/wasmer run"
-Wasm3="$HOME/runtimes/wasm3/build/wasm3"
-WAMR="$HOME/runtimes/wasm-micro-runtime/product-mini/platforms/linux/build/iwasm"
+Wasm3="/opt/homebrew/Cellar/wasm3/0.5.0/bin/wasm3"
+WAMR="$HOME/wasm-micro-runtime-WAMR-2.4.4/product-mini/platforms/darwin/build/iwasm"
 
 runaot() {
     cmd="$1"

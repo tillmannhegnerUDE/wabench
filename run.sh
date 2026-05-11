@@ -6,7 +6,7 @@ MeasureMem=false
 
 MeasurePerf=false
 
-BenchRoot="$HOME/WABench"
+BenchRoot="$HOME/CLionProjects/wabench"
 
 CommonScript="$BenchRoot/common.sh"
 
@@ -76,6 +76,9 @@ BenchSuite+=("Benchmarks/whitedb"                           "./whitedb"        "
 
 NumBench=$( echo "scale=0; ${#BenchSuite[@]} / $BenchSize" | bc -l )
 
+echo "start: ${BenchSuite[0]}"
+Message=""
+
 for (( idx=0; idx<${#BenchSuite[@]}; idx+=${BenchSize} ));
 do
     nth=$( echo "scale=0; $idx / $BenchSize" | bc -l)
@@ -105,13 +108,15 @@ do
         if [ ! -f "$Native" ]
         then
             echo "Building binaries..."
-            make > /dev/null 2>&1
+            Message=$(make 2>&1)
         fi
     fi
 
     if [ ! -f "$Native.wasm" ]
     then
         echo "Cannot build WebAssembly binary..."
+        echo "Cause: $Message"
+        cd "$BenchRoot"
         continue
     fi
 
