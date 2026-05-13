@@ -23,7 +23,7 @@ runaot() {
     echo "AOT compilation time: $aottime seconds"
 }
 
-runtest() {
+runtest() { # $1: Path to native program or command that should be invoked for wasm $2: argument for native program $3: indicated which runtime the test is run with or if it is run natively $4: if this is "-n", a dry run is started first. The argument "-n" has to be given to the call of run.sh
     cmd="$1 >$2 2>&1"
     if [ "$4" = "-n" ] # dry run
     then

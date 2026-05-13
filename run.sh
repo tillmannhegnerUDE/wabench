@@ -102,15 +102,15 @@ do
     WasmDir=${BenchSuite[idx+4]}
 
     # Check whether this is a dry run
-    if [ "$1" != "-n" ]
-    then
+#    if [ "$1" != "-n" ]
+#    then
         # Check whether there exist binaries
         if [ ! -f "$Native" ]
         then
             echo "Building binaries..."
             Message=$(make 2>&1)
         fi
-    fi
+#    fi
 
     if [ ! -f "$Native.wasm" ]
     then
@@ -119,17 +119,18 @@ do
         cd "$BenchRoot"
         continue
     fi
+    Message=""
 
     # Run benchmark
     echo "Running..."
     . $CommonScript
 
     # Clean up
-    if [ "$1" != "-n" ]
-    then
+#    if [ "$1" != "-n" ]
+#    then
         echo "Cleanup..."
         make clean > /dev/null 2>&1
-    fi
+#    fi
 
     # Enter the root directory
     cd "$BenchRoot"
