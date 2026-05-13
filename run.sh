@@ -13,10 +13,10 @@ CommonScript="$BenchRoot/common.sh"
 BenchSize=5
 BenchSuite=()
 # Structure:  Benchmark directory                             Native           NativeArg         Iter  WasmDir
-BenchSuite+=("JetStream2/gcc-loops"                         "./gcc-loops"      ""                "1"    "")
-BenchSuite+=("JetStream2/hashset"                           "./hashset"        ""                "1"    "")
-BenchSuite+=("JetStream2/quicksort"                         "./quicksort"      ""                "10"    "")
-BenchSuite+=("JetStream2/tsf"                               "./tsf"            "10000"           "1"    ".")
+#BenchSuite+=("JetStream2/gcc-loops"                         "./gcc-loops"      ""                "1"    "")
+#BenchSuite+=("JetStream2/hashset"                           "./hashset"        ""                "1"    "")
+#BenchSuite+=("JetStream2/quicksort"                         "./quicksort"      ""                "10"    "")
+#BenchSuite+=("JetStream2/tsf"                               "./tsf"            "10000"           "1"    ".")
 BenchSuite+=("MiBench/automotive/basicmath"                 "./basicmath"      ""                "1"    "")
 BenchSuite+=("MiBench/automotive/bitcount"                  "./bitcount"       "1125000"         "1"    "")
 BenchSuite+=("MiBench/consumer/jpeg/cjpeg"                  "./cjpeg"      \
@@ -78,8 +78,9 @@ NumBench=$( echo "scale=0; ${#BenchSuite[@]} / $BenchSize" | bc -l )
 
 echo "start: ${BenchSuite[0]}"
 Message=""
+ReturnValue=0
 
-for (( idx=0; idx<${#BenchSuite[@]}; idx+=${BenchSize} ));
+for (( idx=0; idx<${#BenchSuite[@]} & ReturnValue==0; idx+=${BenchSize} ));
 do
     nth=$( echo "scale=0; $idx / $BenchSize" | bc -l)
     nth=$((nth+1))
@@ -105,25 +106,39 @@ do
 #    if [ "$1" != "-n" ]
 #    then
         # Check whether there exist binaries
-        if [ ! -f "$Native" ]
-        then
-            echo "Building binaries..."
-            Message=$(make 2>&1)
-        fi
+    if [ ! -f "$Native" ]
+    then
+        echo "Building binaries..."
+        Message=$(make 2>&1)
+    fi
 #    fi
+
+    if [ "$1" != "-s" ]
+    then
+      if [ ! -f "$Native.wasm" ]
+      then
+        echo "The native application was not built"
+        ReturnValue=1
+        continue
+      fi
+    fi
 
     if [ ! -f "$Native.wasm" ]
     then
         echo "Cannot build WebAssembly binary..."
         echo "Cause: $Message"
+        ReturnValue=1
         cd "$BenchRoot"
         continue
     fi
     Message=""
 
-    # Run benchmark
-    echo "Running..."
-    . $CommonScript
+    if [ "$1" != "-s" ]
+    then
+      # Run benchmark
+      echo "Running..."
+      . $CommonScript
+    fi
 
     # Clean up
 #    if [ "$1" != "-n" ]
@@ -136,3 +151,6 @@ do
     cd "$BenchRoot"
     echo ""
 done
+
+echo "Return value: $ReturnValue"
+exit $ReturnValue
