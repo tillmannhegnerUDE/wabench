@@ -1,0 +1,10 @@
+/usr/bin/clang  -O2 -I. -c src/basicmath_large.c -o src/basicmath_large.o
+src/basicmath_large.c:18:3: error: call to undeclared library function 'printf' with type 'int (const char *, ...)'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   18 |   printf("********* CUBIC FUNCTIONS ***********\n");
+      |   ^
+src/basicmath_large.c:18:3: note: include the header <stdio.h> or explicitly provide a declaration for 'printf'
+src/basicmath_large.c:116:3: error: call to undeclared function 'puts'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  116 |   puts("");
+      |   ^
+2 errors generated.
+make: *** [src/basicmath_large.o] Error 1

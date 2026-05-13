@@ -12,11 +12,11 @@ CommonScript="$BenchRoot/common.sh"
 
 BenchSize=5
 BenchSuite=()
-# Structure:  Benchmark directory                             Native           NativeArg         Iter  WasmDir
-#BenchSuite+=("JetStream2/gcc-loops"                         "./gcc-loops"      ""                "1"    "")
-#BenchSuite+=("JetStream2/hashset"                           "./hashset"        ""                "1"    "")
-#BenchSuite+=("JetStream2/quicksort"                         "./quicksort"      ""                "10"    "")
-#BenchSuite+=("JetStream2/tsf"                               "./tsf"            "10000"           "1"    ".")
+ Structure:  Benchmark directory                             Native           NativeArg         Iter  WasmDir
+BenchSuite+=("JetStream2/gcc-loops"                         "./gcc-loops"      ""                "1"    "")
+BenchSuite+=("JetStream2/hashset"                           "./hashset"        ""                "1"    "")
+BenchSuite+=("JetStream2/quicksort"                         "./quicksort"      ""                "10"    "")
+BenchSuite+=("JetStream2/tsf"                               "./tsf"            "10000"           "1"    ".")
 BenchSuite+=("MiBench/automotive/basicmath"                 "./basicmath"      ""                "1"    "")
 BenchSuite+=("MiBench/automotive/bitcount"                  "./bitcount"       "1125000"         "1"    "")
 BenchSuite+=("MiBench/consumer/jpeg/cjpeg"                  "./cjpeg"      \
@@ -119,6 +119,7 @@ do
       then
         echo "The native application was not built"
         ReturnValue=1
+        cd "$BenchRoot"
         continue
       fi
     fi
@@ -151,6 +152,11 @@ do
     cd "$BenchRoot"
     echo ""
 done
+
+if [ $ReturnValue == 1 ]
+then
+  echo "$Message" > error-report.txt
+fi
 
 echo "Return value: $ReturnValue"
 exit $ReturnValue
