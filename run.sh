@@ -1,5 +1,14 @@
 #!/bin/bash
 
+if [ "$1" == "-h" ]
+then
+  echo "Benchmarking tool for WASM runtimes"
+  echo "Options:"
+  echo "  -s perform a smoke test"
+  echo "  -n perform a dry run"
+  exit 0
+fi
+
 RunAOT=false
 
 MeasureMem=false
@@ -9,6 +18,8 @@ MeasurePerf=false
 BenchRoot="$HOME/CLionProjects/wabench"
 
 CommonScript="$BenchRoot/common.sh"
+
+TimesTable="timeResults.csv"
 
 BenchSize=5
 BenchSuite=()
@@ -79,7 +90,10 @@ NumBench=$( echo "scale=0; ${#BenchSuite[@]} / $BenchSize" | bc -l )
 echo "start: ${BenchSuite[0]}"
 Message=""
 ReturnValue=0
-
+if [ "$1" != "-s" ]
+then
+    echo "Programm;Native;Wasmtime;WAVM;Wasmer;Wasm3;WAMR" > $TimesTable
+fi
 for (( idx=0; idx<${#BenchSuite[@]} & ReturnValue==0; idx+=${BenchSize} ));
 do
     nth=$( echo "scale=0; $idx / $BenchSize" | bc -l)
@@ -118,6 +132,7 @@ do
       if [ ! -f "$Native.wasm" ]
       then
         echo "The native application was not built"
+        echo "Cause: $(pwd) $Message"
         ReturnValue=1
         cd "$BenchRoot"
         continue
@@ -137,8 +152,11 @@ do
     if [ "$1" != "-s" ]
     then
       # Run benchmark
+      TimeTableLine="$Native"
       echo "Running..."
       . $CommonScript
+      cd "$BenchRoot"
+      echo "$TimeTableLine">>$TimesTable
     fi
 
     # Clean up

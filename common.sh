@@ -4,9 +4,11 @@ WasmAOT=$Native.cwasm
 Wasmtime="$HOME/.wasmtime/bin/wasmtime"
 WAVM="$HOME/.wavm/bin/wavm"
 #Wasmer="$HOME/runtimes/wasmer/target/release/wasmer"
-Wasmer="$HOME/.wasmer/bin/wasmer run"
+Wasmer="$HOME/.wasmer/bin/wasmer"
 Wasm3="/opt/homebrew/Cellar/wasm3/0.5.0/bin/wasm3"
 WAMR="$HOME/wasm-micro-runtime-WAMR-2.4.4/product-mini/platforms/darwin/build/iwasm"
+
+
 
 runaot() {
     cmd="$1"
@@ -68,13 +70,14 @@ runtest() { # $1: Path to native program or command that should be invoked for w
             itertime="0${itertime}"
         fi
         echo -e "$3:   \t$itertime seconds"
-        #echo "Total run time: $runtime seconds"
+        TimeTableLine="$TimeTableLine;$itertime"
+#        echo "Total run time: $runtime seconds"
         #echo "Each iter time: $itertime seconds"
         #cat "$2"
     fi
     if grep -q "ERROR\|Error\|error\|Exception\|exception\|Fail\|fail" "$2"
     then
-        echo "Error encountered. Please double-check"
+        echo "Error encountered. Please double-check $2"
     fi
 }
 
@@ -98,7 +101,7 @@ fi
 #echo "Iteration(s): $Iter"
 
 #: '
-#echo ""
+echo "normal run"
 runtest "$Native $NativeArg" "output_native" "native" $1
 
 if [ "$RunAOT" = true ]
@@ -143,7 +146,7 @@ if [ "$RunAOT" = false ]
 then
 #echo ""
 # enlarge stack size for wasm3
-runtest "$Wasm3 --stack-size 1000000 $Wasm $Wasm3NativeArg" "output_wasm3" "wasm3" $1
+runtest "$Wasm3 --stack-size 500000000 $Wasm $Wasm3NativeArg" "output_wasm3" "wasm3" $1
 fi
 
 if [ "$RunAOT" = false ]
