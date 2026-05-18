@@ -57,20 +57,12 @@ runtest() { # $1: Path to native program or command that should be invoked for w
         echo -e "$3:   \t$cachemisses cache-misses"
         echo -e "$3:   \t$cacherefs cache-references"
     else
-        start=`date +%s.%N`
-        for (( i=1; i<=$Iter; i++ ))
-        do
-            sh -c "$cmd"
-        done
-        end=`date +%s.%N`
-        runtime=$( echo "$end - $start" | bc -l )
-        itertime=$( echo "scale=11; $runtime / $Iter" | bc -l )
-        if [ "${itertime::1}" = "." ]
-        then
-            itertime="0${itertime}"
-        fi
-        echo -e "$3:   \t$itertime seconds"
-        TimeTableLine="$TimeTableLine;$itertime"
+        timeRes=$(/usr/bin/time -p sh -c "for (( i=1; i<=$Iter; i++ ))
+                do
+                    $cmd
+                done" 2>&1 | awk '/user/ {print $2}')
+        echo -e "$3:   \t$timeRes seconds"
+        TimeTableLine="$TimeTableLine;$timeRes"
 #        echo "Total run time: $runtime seconds"
         #echo "Each iter time: $itertime seconds"
         #cat "$2"
