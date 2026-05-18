@@ -127,7 +127,7 @@ do
     if [ ! -f "$Native.wasm" ]
     then
         echo "Cannot build WebAssembly binary..."
-        echo "Cause: $Message"
+        echo "Cause: $(pwd) $Message"
         ReturnValue=1
         cd "$BenchRoot"
         continue

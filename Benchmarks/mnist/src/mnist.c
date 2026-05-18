@@ -3,8 +3,8 @@
 #include <stdint.h>
 #include <math.h>
 
-#include "include/mnist_file.h"
-#include "include/neural_network.h"
+#include "../include/mnist_file.h"
+#include "../include/neural_network.h"
 
 #define STEPS 1000
 #define BATCH_SIZE 100

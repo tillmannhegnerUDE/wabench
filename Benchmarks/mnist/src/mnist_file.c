@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "include/mnist_file.h"
+#include "../include/mnist_file.h"
 
 /**
  * Convert from the big endian format in the dataset if we're on a little endian
