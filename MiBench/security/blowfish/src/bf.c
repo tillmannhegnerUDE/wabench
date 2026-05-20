@@ -16,7 +16,7 @@ main(int argc, char *argv[])
 if (argc<3)
 {
 	printf("Usage: blowfish {e|d} <intput> <output> key\n");
-	exit(-1);
+	exit(EXIT_FAILURE);
 }
 
 if (*argv[1]=='e' || *argv[1]=='E')
@@ -26,7 +26,7 @@ else if (*argv[1]=='d' || *argv[1]=='D')
 else
 {
 	printf("Usage: blowfish {e|d} <intput> <output> key\n");
-	exit(-1);
+	exit(EXIT_FAILURE);
 }
 					
 
@@ -42,7 +42,7 @@ while(i < 64 && *cp)    /* the maximum key length is 32 bytes and   */
 	else                            /* error if not hexadecimal     */
 	{
 		printf("key must be in hexadecimal notation\n");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	/* store a key byte for each pair of hexadecimal digits         */
@@ -55,19 +55,19 @@ BF_set_key(&key,8,ukey);
 if(*cp)
 {
 	printf("Bad key value.\n");
-	exit(-1);
+	exit(EXIT_FAILURE);
 }
 
 /* open the input and output files */
 if ((fp = fopen(argv[2],"r"))==0)
 {
 	printf("Usage: blowfish {e|d} <intput> <output> key\n");
-	exit(-1);
+	exit(EXIT_FAILURE);
 };
 if ((fp2 = fopen(argv[3],"w"))==0)
 {
 	printf("Usage: blowfish {e|d} <intput> <output> key\n");
-	exit(-1);
+	exit(EXIT_FAILURE);
 };
 
 i=0;
@@ -90,7 +90,7 @@ while(!feof(fp))
 fclose(fp);
 fclose(fp2);
 
-exit(1);
+exit(EXIT_SUCCESS);
 }
 
 

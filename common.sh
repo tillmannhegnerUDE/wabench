@@ -61,6 +61,7 @@ runtest() { # $1: Path to native program or command that should be invoked for w
                 do
                     $cmd
                 done" 2>&1 | awk '/user/ {print $2}')
+        # depending on the result wanted, I can either choose the time in "real", from the "user" or from the "system"
         echo -e "$3:   \t$timeRes seconds"
         TimeTableLine="$TimeTableLine;$timeRes"
 #        echo "Total run time: $runtime seconds"
@@ -77,18 +78,16 @@ if [ ! -z "$WasmDir" ]
 then
     WasmtimeDir="--dir $WasmDir"
     WAVMDir="--mount-root $WasmDir"
-    WasmerDir="--volume $WasmDir"
+    WasmerDir="--dir $WasmDir"
     WAMRDir="--dir=$WasmDir"
 fi
 
-if [ ! -z "$NativeArg" ]
-then
-    WasmtimeNativeArg="$NativeArg"
-    WAVMNativeArg="$NativeArg"
-    WasmerNativeArg="-- $NativeArg"
-    Wasm3NativeArg="$NativeArg"
-    WAMRNativeArg="$NativeArg"
-fi
+
+WasmtimeNativeArg="$NativeArg"
+WAVMNativeArg="$NativeArg"
+WasmerNativeArg="-- $NativeArg"
+Wasm3NativeArg="$NativeArg"
+WAMRNativeArg="$NativeArg"
 
 #echo "Iteration(s): $Iter"
 

@@ -31,9 +31,9 @@ BenchSuite+=("JetStream2/tsf"                               "./tsf"            "
 BenchSuite+=("MiBench/automotive/basicmath"                 "./basicmath"      ""                "1"    "")
 BenchSuite+=("MiBench/automotive/bitcount"                  "./bitcount"       "1125000"         "1"    "")
 BenchSuite+=("MiBench/consumer/jpeg/cjpeg"                  "./cjpeg"      \
-             "-dct int -progressive -opt -outfile output_large_encode.jpeg input_large.ppm" "1" ".")
+             "-dct int -progressive -opt -outfile output_large_encode.jpeg input_large.ppm" "10" ".")
 BenchSuite+=("MiBench/consumer/jpeg/djpeg"                  "./djpeg"      \
-             "-dct int -ppm -outfile output_large_decode.ppm input_large.jpg" "1" ".")
+             "-dct int -ppm -outfile output_large_decode.ppm input_large.jpg" "10" ".")
 BenchSuite+=("MiBench/office/stringsearch"                  "./stringsearch"   ""          "100"  "")
 BenchSuite+=("MiBench/security/blowfish"                    "./blowfish"   \
              "e input_large.asc output_large.enc 1234567890abcdeffedcba0987654321" "10"  ".")
@@ -155,19 +155,16 @@ do
       TimeTableLine="$Native"
       echo "Running..."
       . $CommonScript
+      echo "Cleanup..."
+      make clean > /dev/null 2>&1
       cd "$BenchRoot"
       echo "$TimeTableLine">>$TimesTable
+    else
+      echo "Cleanup..."
+      make clean > /dev/null 2>&1
+      cd "$BenchRoot"
     fi
 
-    # Clean up
-#    if [ "$1" != "-n" ]
-#    then
-        echo "Cleanup..."
-        make clean > /dev/null 2>&1
-#    fi
-
-    # Enter the root directory
-    cd "$BenchRoot"
     echo ""
 done
 
