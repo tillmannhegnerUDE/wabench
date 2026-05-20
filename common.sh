@@ -77,13 +77,13 @@ if [ ! -z "$WasmDir" ]
 then
     WasmtimeDir="--dir $WasmDir"
     WAVMDir="--mount-root $WasmDir"
-    WasmerDir="--dir $WasmDir"
+    WasmerDir="--volume $WasmDir"
     WAMRDir="--dir=$WasmDir"
 fi
 
 if [ ! -z "$NativeArg" ]
 then
-    WasmtimeNativeArg="-- $NativeArg"
+    WasmtimeNativeArg="$NativeArg"
     WAVMNativeArg="$NativeArg"
     WasmerNativeArg="-- $NativeArg"
     Wasm3NativeArg="$NativeArg"
