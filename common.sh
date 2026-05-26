@@ -10,7 +10,7 @@ WAMR="$HOME/wasm-micro-runtime-WAMR-2.4.4/product-mini/platforms/darwin/build/iw
 
 
 
-runaot() {
+runaot() { # $1: Command that will be executed $2 flag of the run-script
     cmd="$1"
     if [ "$2" = "-n" ] # dry run
     then 
@@ -18,14 +18,15 @@ runaot() {
         echo ""
         return 0
     fi
-    start=`date +%s.%N`
-    sh -c "$cmd"
-    end=`date +%s.%N`
-    aottime=$( echo "$end - $start" | bc -l )
-    echo "AOT compilation time: $aottime seconds"
+    timeRes=$(/usr/bin/time -p sh -c "for (( i=1; i<=$Iter; i++ ))
+        do
+            $cmd
+        done" 2>&1 | awk '/user/ {print $2}')
+    # depending on the result wanted, I can either choose the time in "real", from the "user" or from the "system"
+    echo -e "AOT compilation time: \t$timeRes seconds"
 }
 
-runtest() { # $1: Path to native program or command that should be invoked for wasm $2: argument for native program $3: indicated which runtime the test is run with or if it is run natively $4: if this is "-n", a dry run is started first. The argument "-n" has to be given to the call of run.sh
+runtest() { # $1: command that will be executed (for native and wasm programs) $2: path to the output file $3: indicated which runtime the test is run with or if it is run natively $4: if this is "-n", a dry run is started first. The argument "-n" has to be given to the call of run.sh
     cmd="$1 >$2 2>&1"
     if [ "$4" = "-n" ] # dry run
     then
@@ -35,8 +36,11 @@ runtest() { # $1: Path to native program or command that should be invoked for w
     fi
     if [ "$MeasureMem" = true ]
     then
-        sh -c "/usr/bin/time -v $cmd"
-        mem=$( cat "$2" | grep "Maximum resident set size (kbytes)" | sed 's/.*: //' )
+        #version for ubuntu:
+        # sh -c "/usr/bin/time -v $cmd"
+        # mem=$( cat "$2" | grep "Maximum resident set size (kbytes)" | sed 's/.*: //' )
+        sh -c "/usr/bin/time -l -p $cmd"
+        mem=$(cat "$2" | grep "maximum resident set size" | sed 's/maximum resident set size//' | xargs)
         echo -e "$3:   \t$mem kbytes"
     elif [ "$MeasurePerf" = true ]
     then
@@ -51,22 +55,25 @@ runtest() { # $1: Path to native program or command that should be invoked for w
         echo -e "$3:   \t$branches branches"
         echo -e "$3:   \t$brmisses branch-misses"
 '
-        sh -c "perf stat -e cache-misses,cache-references $cmd"
-        cachemisses=$( cat "$2" | grep "cache-misses" | sed 's/      cache-misses.*//' | sed 's/        //' )
-        cacherefs=$( cat "$2" | grep "cache-references" | sed 's/      cache-references.*//' | sed 's/        //')
-        echo -e "$3:   \t$cachemisses cache-misses"
-        echo -e "$3:   \t$cacherefs cache-references"
+        #version for ubuntu:
+#        sh -c "perf stat -e cache-misses,cache-references $cmd"
+#        cachemisses=$( cat "$2" | grep "cache-misses" | sed 's/      cache-misses.*//' | sed 's/        //' )
+#        cacherefs=$( cat "$2" | grep "cache-references" | sed 's/      cache-references.*//' | sed 's/        //')
+        sh -c "xctrace record --template 'CPU Counters' --output $2.trace --launch -- $cmd"
+        cat "$2"
+#        echo -e "$3:   \t$cachemisses cache-misses"
+#        echo -e "$3:   \t$cacherefs cache-references"
     else
-        timeRes=$(/usr/bin/time -p sh -c "for (( i=1; i<=$Iter; i++ ))
-                do
-                    $cmd
-                done" 2>&1 | awk '/user/ {print $2}')
-        # depending on the result wanted, I can either choose the time in "real", from the "user" or from the "system"
-        echo -e "$3:   \t$timeRes seconds"
-        TimeTableLine="$TimeTableLine;$timeRes"
+      timeRes=$(/usr/bin/time -p sh -c "for (( i=1; i<=$Iter; i++ ))
+        do
+          $cmd
+        done" 2>&1 | awk '/user/ {print $2}')
+      # depending on the result wanted, I can either choose the time in "real", from the "user" or from the "system"
+      echo -e "$3:   \t$timeRes seconds"
+      TimeTableLine="$TimeTableLine;$timeRes"
 #        echo "Total run time: $runtime seconds"
-        #echo "Each iter time: $itertime seconds"
-        #cat "$2"
+      #echo "Each iter time: $itertime seconds"
+      #cat "$2"
     fi
     if grep -q "ERROR\|Error\|error\|Exception\|exception\|Fail\|fail" "$2"
     then

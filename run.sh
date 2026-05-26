@@ -6,6 +6,7 @@ then
   echo "Options:"
   echo "  -s perform a smoke test"
   echo "  -n perform a dry run"
+  echo "  -c skip cleaning up after execution. Output files and binaries persist."
   exit 0
 fi
 
@@ -155,13 +156,19 @@ do
       TimeTableLine="$Native"
       echo "Running..."
       . $CommonScript
-      echo "Cleanup..."
-      make clean > /dev/null 2>&1
+      if [ "$1" != "-c" ]
+      then
+        echo "Cleanup..."
+        make clean > /dev/null 2>&1
+      fi
       cd "$BenchRoot"
       echo "$TimeTableLine">>$TimesTable
     else
-      echo "Cleanup..."
-      make clean > /dev/null 2>&1
+      if [ "$1" != "-c" ]
+      then
+        echo "Cleanup..."
+        make clean > /dev/null 2>&1
+      fi
       cd "$BenchRoot"
     fi
 
