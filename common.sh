@@ -1,12 +1,12 @@
 Wasm=$Native.wasm
 WasmAOT=$Native.cwasm
 
-Wasmtime="$HOME/.wasmtime/bin/wasmtime"
-WAVM="$HOME/.wavm/bin/wavm"
+Wasmtime="/home/wasmtime-dev-x86_64-linux/wasmtime"
+WAVM="/home/bin/wavm"
 #Wasmer="$HOME/runtimes/wasmer/target/release/wasmer"
-Wasmer="$HOME/.wasmer/bin/wasmer"
-Wasm3="/opt/homebrew/Cellar/wasm3/0.5.0/bin/wasm3"
-WAMR="$HOME/wasm-micro-runtime-WAMR-2.4.4/product-mini/platforms/darwin/build/iwasm"
+Wasmer="/root/.wasmer/bin/wasmer"
+Wasm3="/home/wasm3-linux-x64.elf"
+WAMR="/home/iwasm"
 
 
 
@@ -64,7 +64,7 @@ runtest() { # $1: command that will be executed (for native and wasm programs) $
 #        echo -e "$3:   \t$cachemisses cache-misses"
 #        echo -e "$3:   \t$cacherefs cache-references"
     else
-      timeRes=$(/usr/bin/time -p sh -c "for (( i=1; i<=$Iter; i++ ))
+      timeRes=$(/usr/bin/time -p /bin/bash -c "for (( i=1; i<=$Iter; i++ ))
         do
           $cmd
         done" 2>&1 | awk '/user/ {print $2}')
@@ -73,7 +73,7 @@ runtest() { # $1: command that will be executed (for native and wasm programs) $
       TimeTableLine="$TimeTableLine;$timeRes"
 #        echo "Total run time: $runtime seconds"
       #echo "Each iter time: $itertime seconds"
-      #cat "$2"
+      cat "$2"
     fi
     if grep -q "ERROR\|Error\|error\|Exception\|exception\|Fail\|fail" "$2"
     then

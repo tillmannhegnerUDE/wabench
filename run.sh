@@ -16,7 +16,7 @@ MeasureMem=false
 
 MeasurePerf=false
 
-BenchRoot="$HOME/CLionProjects/wabench"
+BenchRoot="/home/wabench"
 
 CommonScript="$BenchRoot/common.sh"
 
@@ -24,7 +24,7 @@ TimesTable="timeResults.csv"
 
 BenchSize=5
 BenchSuite=()
- Structure:  Benchmark directory                             Native           NativeArg         Iter  WasmDir
+# Structure:  Benchmark directory                             Native           NativeArg         Iter  WasmDir
 BenchSuite+=("JetStream2/gcc-loops"                         "./gcc-loops"      ""                "1"    "")
 BenchSuite+=("JetStream2/hashset"                           "./hashset"        ""                "1"    "")
 BenchSuite+=("JetStream2/quicksort"                         "./quicksort"      ""                "10"    "")
@@ -123,8 +123,10 @@ do
         # Check whether there exist binaries
     if [ ! -f "$Native" ]
     then
-        echo "Building binaries..."
-        Message=$(make 2>&1)
+      echo "Building binaries..."
+      Message=$(make 2>&1)
+    else
+      echo "The binaries seem to already exits"
     fi
 #    fi
 
