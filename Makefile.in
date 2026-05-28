@@ -10,7 +10,7 @@ ifeq (${SRCSUFFIX}, $(filter ${SRCSUFFIX}, cc cpp))
     CLANG = clang++
 endif
 
-CC = ${CLANG}
+CC = /usr/bin/${CLANG}
 
 OPT=-O2
 
@@ -20,10 +20,10 @@ WASMCC = /home/wasi-sdk-10.0/bin/${CLANG} \
 all: ${Native} ${WASM}
 
 %.o: %.${SRCSUFFIX}
-	${CC} ${CFLAGS} ${OPT} ${CINCLUDE} -c $< -o $@
+	${CC} -I/usr/include/x86_64-linux-gnu ${CFLAGS} ${OPT} ${CINCLUDE} -c $< -o $@
 
 ${Native}: ${OBJ}
-	${CC} ${CFLAGS} ${OPT} $^ ${LDFLAGS} -v -o $@
+	${CC} -I/usr/include/x86_64-linux-gnu ${CFLAGS} ${OPT} $^ ${LDFLAGS} -v -o $@
 
 ${WASM}: ${SRC}
 	${WASMCC} ${CFLAGS} ${OPT} ${CINCLUDE} $^ -o $@

@@ -10,6 +10,8 @@ then
   exit 0
 fi
 
+dpkg -L libc6-dev
+
 RunAOT=false
 
 MeasureMem=false
@@ -181,6 +183,8 @@ if [ $ReturnValue == 1 ]
 then
   echo "$Message" > error-report.txt
 fi
+
+#sleep 300
 
 echo "Return value: $ReturnValue"
 exit $ReturnValue
