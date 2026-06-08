@@ -3,9 +3,10 @@ Benchmark = bitcount
 SRCDIR = src
 SRCSUFFIX = c
 
-CFLAGS =
+CFLAGS = -std=c90
 CINCLUDE = -I.
 OPT = -O2
 LDFLAGS = -lm
+WASMFLAGS = -D_WASI_EMULATED_PROCESS_CLOCKS -lwasi-emulated-process-clocks
 
 include ../../../Makefile.in

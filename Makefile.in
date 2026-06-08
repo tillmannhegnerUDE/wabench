@@ -14,19 +14,19 @@ CC = /usr/bin/${CLANG}
 
 OPT=-O2
 
-WASMCC = /home/wasi-sdk-10.0/bin/${CLANG} \
-         --sysroot /wasi-sdk-10.0/share/wasi-sysroot
+WASMCC = /opt/wasi-sdk-33.0-x86_64-linux/bin/${CLANG} \
+         --sysroot /opt/wasi-sdk-33.0-x86_64-linux/share/wasi-sysroot
 
 all: ${Native} ${WASM}
 
 %.o: %.${SRCSUFFIX}
-	${CC} -I/usr/include/x86_64-linux-gnu ${CFLAGS} ${OPT} ${CINCLUDE} -c $< -o $@
+	${CC} ${CFLAGS} ${OPT} ${CINCLUDE} -c $< -o $@
 
 ${Native}: ${OBJ}
-	${CC} -I/usr/include/x86_64-linux-gnu ${CFLAGS} ${OPT} $^ ${LDFLAGS} -v -o $@
+	${CC} ${CFLAGS} ${OPT} $^ ${LDFLAGS} -v -o $@
 
 ${WASM}: ${SRC}
-	${WASMCC} ${CFLAGS} ${OPT} ${CINCLUDE} $^ -o $@
+	${WASMCC} ${CFLAGS} ${WASMFLAGS} ${OPT} ${CINCLUDE} $^ -o $@
 
 clean:
 	@echo "Cleaning up..."

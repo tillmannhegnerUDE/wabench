@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits>
 #include <sys/time.h>
 
 // Compile with: xcrun clang++ -o HashSet HashSet.cpp -O2 -W -framework Foundation -licucore -std=c++11 -fvisibility=hidden -DNDEBUG=1

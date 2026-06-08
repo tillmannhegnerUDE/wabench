@@ -7,5 +7,6 @@ CFLAGS = -DPOLYBENCH_DUMP_ARRAYS -DPOLYBENCH_USE_C99_PROTO
 CINCLUDE = -I${SRCDIR}
 OPT = -O2
 LDFLAGS = -lm
+WASMFLAGS = -D_WASI_EMULATED_PROCESS_CLOCKS -lwasi-emulated-process-clocks
 
 include ../../../Makefile.in

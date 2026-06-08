@@ -10,8 +10,6 @@ then
   exit 0
 fi
 
-dpkg -L libc6-dev
-
 RunAOT=false
 
 MeasureMem=false
@@ -136,7 +134,14 @@ do
     then
       if [ ! -f "$Native.wasm" ]
       then
-        echo "The native application was not built"
+        if [ ! -f "$Native" ]
+        then
+          echo "The native application was not built"
+        fi
+        if [ ! -f "$Native.wasm" ]
+        then
+          echo "The wasm application was not built"
+        fi
         echo "Cause: $(pwd) $Message"
         ReturnValue=1
         cd "$BenchRoot"
@@ -184,7 +189,7 @@ then
   echo "$Message" > error-report.txt
 fi
 
-#sleep 300
+sleep 300
 
 echo "Return value: $ReturnValue"
 exit $ReturnValue
