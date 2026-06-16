@@ -134,6 +134,7 @@ do
     then
       if [ ! -f "$Native.wasm" ]
       then
+        echo "ErrorMessage: $(pwd) $Message"
         if [ ! -f "$Native" ]
         then
           echo "The native application was not built"
@@ -142,7 +143,6 @@ do
         then
           echo "The wasm application was not built"
         fi
-        echo "Cause: $(pwd) $Message"
         ReturnValue=1
         cd "$BenchRoot"
         continue
@@ -189,7 +189,7 @@ then
   echo "$Message" > error-report.txt
 fi
 
-sleep 300
+#sleep 300
 
 echo "Return value: $ReturnValue"
 exit $ReturnValue
