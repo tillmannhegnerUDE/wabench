@@ -187,9 +187,9 @@ done
 if [ $ReturnValue == 1 ]
 then
   echo "$Message" > error-report.txt
+  sleep 300
 fi
 
-#sleep 300
 
 echo "Return value: $ReturnValue"
 exit $ReturnValue

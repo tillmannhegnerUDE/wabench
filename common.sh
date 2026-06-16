@@ -8,7 +8,8 @@ Wasmer="/root/.wasmer/bin/wasmer"
 Wasm3="/home/wasm3-linux-x64.elf"
 WAMR="/home/iwasm"
 
-
+timeRes=0
+NativeTimeRes=0
 
 runaot() { # $1: Command that will be executed $2 flag of the run-script
     cmd="$1"
@@ -73,7 +74,17 @@ runtest() { # $1: command that will be executed (for native and wasm programs) $
       TimeTableLine="$TimeTableLine;$timeRes"
 #        echo "Total run time: $runtime seconds"
       #echo "Each iter time: $itertime seconds"
-      cat "$2"
+      if [ "$NativeRun" = false ]
+      then
+        timeDiff=$( echo "$timeRes - $NativeTimeRes" | bc -l )
+        Res="$(echo "$timeDiff < 0" | bc -l)"
+        if [ "$Res" -eq 1 ]
+        then
+          echo "somehow the runtime was faster."
+          cat error
+          cat "$2"
+        fi
+      fi
     fi
     if grep -q "ERROR\|Error\|error\|Exception\|exception\|Fail\|fail" "$2"
     then
@@ -100,7 +111,10 @@ WAMRNativeArg="$NativeArg"
 
 #: '
 echo "normal run"
+NativeRun=true
 runtest "$Native $NativeArg" "output_native" "native" $1
+NativeTimeRes=$timeRes
+NativeRun=false
 
 if [ "$RunAOT" = true ]
 then
