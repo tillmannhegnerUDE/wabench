@@ -5,8 +5,8 @@ Wasmtime="/home/wasmtime-dev-x86_64-linux/wasmtime"
 WAVM="/home/bin/wavm"
 #Wasmer="$HOME/runtimes/wasmer/target/release/wasmer"
 Wasmer="/root/.wasmer/bin/wasmer"
-Wasm3="/home/wasm3-linux-x64.elf"
-WAMR="/home/iwasm"
+Wasm3="/home/wasm3-0.5.0/build/wasm3"
+WAMR="/home/wasm-micro-runtime-WAMR-2.4.4/product-mini/platforms/linux/build/iwasm"
 
 timeRes=0
 NativeTimeRes=0
@@ -28,7 +28,8 @@ runaot() { # $1: Command that will be executed $2 flag of the run-script
 }
 
 runtest() { # $1: command that will be executed (for native and wasm programs) $2: path to the output file $3: indicated which runtime the test is run with or if it is run natively $4: if this is "-n", a dry run is started first. The argument "-n" has to be given to the call of run.sh
-    cmd="$1 >$2 2>&1"
+    errorOutput="error$2"
+    cmd="$1 >$2 2>$errorOutput"
     if [ "$4" = "-n" ] # dry run
     then
         echo $cmd
@@ -65,6 +66,7 @@ runtest() { # $1: command that will be executed (for native and wasm programs) $
 #        echo -e "$3:   \t$cachemisses cache-misses"
 #        echo -e "$3:   \t$cacherefs cache-references"
     else
+#      /bin/bash -c $Wasm3
       timeRes=$(/usr/bin/time -p /bin/bash -c "for (( i=1; i<=$Iter; i++ ))
         do
           $cmd
@@ -81,7 +83,7 @@ runtest() { # $1: command that will be executed (for native and wasm programs) $
         if [ "$Res" -eq 1 ]
         then
           echo "somehow the runtime was faster."
-          cat error
+          cat $errorOutput
           cat "$2"
         fi
       fi
@@ -94,10 +96,10 @@ runtest() { # $1: command that will be executed (for native and wasm programs) $
 
 if [ ! -z "$WasmDir" ]
 then
-    WasmtimeDir="--dir $WasmDir"
-    WAVMDir="--mount-root $WasmDir"
-    WasmerDir="--dir $WasmDir"
-    WAMRDir="--dir=$WasmDir"
+    WasmtimeDir=" --dir $WasmDir"
+    WAVMDir=" --mount-root $WasmDir"
+    WasmerDir=" --dir $WasmDir"
+    WAMRDir=" --dir=$WasmDir"
 fi
 
 
@@ -119,25 +121,25 @@ NativeRun=false
 if [ "$RunAOT" = true ]
 then
 runaot "$Wasmtime compile $Wasm -o $WasmAOT" $1
-runtest "$Wasmtime run --allow-precompiled $WasmtimeDir $WasmAOT $WasmtimeNativeArg" "output_wasmtime" "wasmtime" $1
+runtest "$Wasmtime run --allow-precompiled$WasmtimeDir $WasmAOT $WasmtimeNativeArg" "output_wasmtime" "wasmtime" $1
 else
-runtest "$Wasmtime run $WasmtimeDir $Wasm $WasmtimeNativeArg" "output_wasmtime" "wasmtime" $1
+runtest "$Wasmtime run$WasmtimeDir $Wasm $WasmtimeNativeArg" "output_wasmtime" "wasmtime" $1
 fi
 
 if [ "$RunAOT" = true ]
 then
 runaot "$WAVM compile $Wasm $WasmAOT" $1
-runtest "$WAVM run --precompiled $WAVMDir $WasmAOT $WAVMNativeArg" "output_wavm" "wavm" $1
+runtest "$WAVM run --precompiled$WAVMDir $WasmAOT $WAVMNativeArg" "output_wavm" "wavm" $1
 else
-runtest "$WAVM run $WAVMDir $Wasm $WAVMNativeArg" "output_wavm" "wavm" $1
+runtest "$WAVM run$WAVMDir $Wasm $WAVMNativeArg" "output_wavm" "wavm" $1
 fi
 
 if [ "$RunAOT" = true ]
 then
 runaot "$Wasmer compile $Wasm -o $WasmAOT" $1
-runtest "$Wasmer run $WasmerDir $WasmAOT $WasmerNativeArg" "output_wasmer" "wasmer" $1
+runtest "$Wasmer run$WasmerDir $WasmAOT $WasmerNativeArg" "output_wasmer" "wasmer" $1
 else
-runtest "$Wasmer run $WasmerDir $Wasm $WasmerNativeArg" "output_wasmer" "wasmer" $1
+runtest "$Wasmer run$WasmerDir $Wasm $WasmerNativeArg" "output_wasmer" "wasmer" $1
 fi
 
 #'
