@@ -14,8 +14,8 @@ CC = /usr/bin/${CLANG}
 
 OPT=-O2
 
-WASMCC = /opt/wasi-sdk-10.0/bin/${CLANG} \
-         --sysroot /opt/wasi-sdk-10.0/share/wasi-sysroot
+WASMCC = /opt/wasi-sdk-19.0/bin/${CLANG} \
+         --sysroot /opt/wasi-sdk-19.0/share/wasi-sysroot
 
 all: ${Native} ${WASM}
 

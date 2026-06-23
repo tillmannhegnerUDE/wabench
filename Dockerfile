@@ -23,8 +23,8 @@ RUN apt-get update && apt-get install -y \
     ccache
 
 WORKDIR /opt/
-RUN wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-10/wasi-sdk-10.0-linux.tar.gz
-RUN tar xvf wasi-sdk-10.0-linux.tar.gz
+RUN wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-19/wasi-sdk-19.0-linux.tar.gz
+RUN tar xvf wasi-sdk-19.0-linux.tar.gz
 WORKDIR /home/
 RUN curl https://sh.rustup.rs -sSf -o sh.rustup.rs
 RUN sh sh.rustup.rs -y
@@ -62,4 +62,4 @@ RUN mkdir wabench
 COPY . /home/wabench
 WORKDIR /home/wabench
 
-ENTRYPOINT ["./run.sh", "-c"]
+ENTRYPOINT ["./run.sh", "-n"]
