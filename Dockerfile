@@ -62,4 +62,4 @@ RUN mkdir wabench
 COPY . /home/wabench
 WORKDIR /home/wabench
 
-ENTRYPOINT ["./run.sh", "-n"]
+ENTRYPOINT ["./run.sh", "-c"]

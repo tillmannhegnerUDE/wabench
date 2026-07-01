@@ -93,7 +93,13 @@ Message=""
 ReturnValue=0
 if [ "$1" != "-s" ]
 then
-    echo "Programm;Native;Wasmtime;WAVM;Wasmer;Wasm3;WAMR" > $TimesTable
+
+    echo -n "Programm;Native" > $TimesTable
+    for runtime in $BenchRoot/RuntimeConfigs/*.sh; do
+      echo -n ";" >> $TimesTable
+      basename -s .sh "$runtime" | tr -d '\n' >> $TimesTable;
+      done
+    echo "" >> $TimesTable
 fi
 for (( idx=0; idx<${#BenchSuite[@]} & ReturnValue==0; idx+=${BenchSize} ));
 do

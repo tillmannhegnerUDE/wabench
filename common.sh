@@ -1,13 +1,6 @@
 Wasm=$Native.wasm
 WasmAOT=$Native.cwasm
 
-Wasmtime="/home/wasmtime-dev-x86_64-linux/wasmtime"
-WAVM="/home/bin/wavm"
-#Wasmer="$HOME/runtimes/wasmer/target/release/wasmer"
-Wasmer="/root/.wasmer/bin/wasmer"
-Wasm3="/home/wasm3-0.5.0/build/wasm3"
-WAMR="/home/wasm-micro-runtime-WAMR-2.4.4/product-mini/platforms/linux/build/iwasm"
-
 timeRes=0
 NativeTimeRes=0
 
@@ -94,85 +87,14 @@ runtest() { # $1: command that will be executed (for native and wasm programs) $
     fi
 }
 
-if [ ! -z "$WasmDir" ]
-then
-    WasmtimeDir=" --dir $WasmDir"
-    WAVMDir=" --mount-root $WasmDir"
-    WasmerDir=" --dir $WasmDir"
-    WAMRDir=" --dir=$WasmDir"
-fi
-
-
-WasmtimeNativeArg="$NativeArg"
-WAVMNativeArg="$NativeArg"
-WasmerNativeArg="-- $NativeArg"
-Wasm3NativeArg="$NativeArg"
-WAMRNativeArg="$NativeArg"
-
-#echo "Iteration(s): $Iter"
-
-#: '
 echo "normal run"
 NativeRun=true
 runtest "$Native $NativeArg" "output_native" "native" $1
 NativeTimeRes=$timeRes
 NativeRun=false
 
-if [ "$RunAOT" = true ]
-then
-runaot "$Wasmtime compile $Wasm -o $WasmAOT" $1
-runtest "$Wasmtime run --allow-precompiled$WasmtimeDir $WasmAOT $WasmtimeNativeArg" "output_wasmtime" "wasmtime" $1
-else
-runtest "$Wasmtime run$WasmtimeDir $Wasm $WasmtimeNativeArg" "output_wasmtime" "wasmtime" $1
-fi
-
-if [ "$RunAOT" = true ]
-then
-runaot "$WAVM compile $Wasm $WasmAOT" $1
-runtest "$WAVM run --precompiled$WAVMDir $WasmAOT $WAVMNativeArg" "output_wavm" "wavm" $1
-else
-runtest "$WAVM run$WAVMDir $Wasm $WAVMNativeArg" "output_wavm" "wavm" $1
-fi
-
-if [ "$RunAOT" = true ]
-then
-runaot "$Wasmer compile $Wasm -o $WasmAOT" $1
-runtest "$Wasmer run$WasmerDir $WasmAOT $WasmerNativeArg" "output_wasmer" "wasmer" $1
-else
-runtest "$Wasmer run$WasmerDir $Wasm $WasmerNativeArg" "output_wasmer" "wasmer" $1
-fi
-
-#'
-
-: '
-#echo ""
-runtest "$Wasmer --singlepass $WasmerDir $Wasm $WasmerNativeArg" "output_wasmer" "wasmer (singlepass)" $1
-
-#echo ""
-runtest "$Wasmer --cranelift $WasmerDir $Wasm $WasmerNativeArg" "output_wasmer" "wasmer (cranelift)" $1
-
-#echo ""
-runtest "$Wasmer --llvm $WasmerDir $Wasm $WasmerNativeArg" "output_wasmer" "wasmer (llvm)" $1
-'
-
-#: '
-if [ "$RunAOT" = false ]
-then
-#echo ""
-# enlarge stack size for wasm3
-runtest "$Wasm3 --stack-size 500000000 $Wasm $Wasm3NativeArg" "output_wasm3" "wasm3" $1
-fi
-
-if [ "$RunAOT" = false ]
-then
-#echo ""
-# 32KB stack size for WAMR
-runtest "$WAMR --stack-size=32768 $WAMRDir $Wasm $WAMRNativeArg" "output_wamr" "wamr" $1
-fi
-
-#'
-
-#echo ""
+#run all runtimes for the current benchmark
+for runtime in $BenchRoot/RuntimeConfigs/*.sh; do . $runtime; done
 
 if [ "$1" == "-n" ] # No need to compare results for a dry run
 then
