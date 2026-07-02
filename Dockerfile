@@ -22,6 +22,7 @@ RUN apt-get update && apt-get install -y \
     lib32gcc-11-dev  \
     ccache
 
+#install the wasm compiler
 WORKDIR /opt/
 RUN wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-19/wasi-sdk-19.0-linux.tar.gz
 RUN tar xvf wasi-sdk-19.0-linux.tar.gz
@@ -31,6 +32,8 @@ RUN sh sh.rustup.rs -y
 ENV PATH="$PATH:/root/.cargo/bin"
 RUN cargo install wit-bindgen-cli
 RUN cargo install --locked wasm-tools
+
+#install the runtimes
 RUN wget https://github.com/bytecodealliance/wasmtime/releases/download/dev/wasmtime-dev-x86_64-linux.tar.xz
 RUN tar -xf wasmtime-dev-x86_64-linux.tar.xz
 RUN wget https://github.com/WAVM/WAVM/releases/download/nightly%2F2026-04-05/wavm-nightly-2026-04-05-linux-x64.tar.gz
@@ -44,9 +47,6 @@ WORKDIR /home/wasm3-0.5.0/build
 RUN cmake .. -DCMAKE_BUILD_TYPE=Release
 RUN make -j$(nproc)
 RUN make install
-#RUN /usr/bin/clang /home/wasm3-0.5.0/source/*.c
-#RUN /usr/bin/clang /home/wasm3-0.5.0/platforms/app/*.c
-#RUN chmod +x wasm3-linux-x64.elf
 WORKDIR /home/
 RUN wget https://github.com/bytecodealliance/wasm-micro-runtime/archive/refs/tags/WAMR-2.4.4.tar.gz
 RUN tar -xzf WAMR-2.4.4.tar.gz
@@ -55,9 +55,12 @@ RUN mkdir build
 WORKDIR /home/wasm-micro-runtime-WAMR-2.4.4/product-mini/platforms/linux/build/
 RUN cmake ..
 RUN make
-#RUN wget https://github.com/llvm/llvm-project/releases/download/llvmorg-22.1.0/LLVM-22.1.0-Linux-X64.tar.xz
-#RUN tar -xf LLVM-22.1.0-Linux-X64.tar.xz
 WORKDIR /home/
+RUN wget https://github.com/WasmEdge/WasmEdge/releases/download/0.17.0/WasmEdge-0.17.0-ubuntu20.04_x86_64.tar.gz && \
+    mkdir wasmedge && \
+    tar -xzf WasmEdge-0.17.0-ubuntu20.04_x86_64.tar.gz -C ./wasmedge/
+
+#import code
 RUN mkdir wabench
 COPY . /home/wabench
 WORKDIR /home/wabench

@@ -12,17 +12,13 @@ runaot() { # $1: Command that will be executed $2 flag of the run-script
         echo ""
         return 0
     fi
-    timeRes=$(/usr/bin/time -p sh -c "for (( i=1; i<=$Iter; i++ ))
-        do
-            $cmd
-        done" 2>&1 | awk '/user/ {print $2}')
+    timeRes=$(/usr/bin/time -p /bin/bash -c "$cmd" 2>&1 | awk '/user/ {print $2}')
     # depending on the result wanted, I can either choose the time in "real", from the "user" or from the "system"
     echo -e "AOT compilation time: \t$timeRes seconds"
 }
 
 runtest() { # $1: command that will be executed (for native and wasm programs) $2: path to the output file $3: indicated which runtime the test is run with or if it is run natively $4: if this is "-n", a dry run is started first. The argument "-n" has to be given to the call of run.sh
-    errorOutput="error$2"
-    cmd="$1 >$2 2>$errorOutput"
+    cmd="$1 &>$2"
     if [ "$4" = "-n" ] # dry run
     then
         echo $cmd
