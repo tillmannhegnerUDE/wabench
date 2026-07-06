@@ -10,7 +10,7 @@ then
   exit 0
 fi
 
-RunAOT=true
+RunAOT=false
 
 MeasureMem=false
 
@@ -25,10 +25,10 @@ TimesTable="timeResults.csv"
 BenchSize=5
 BenchSuite=()
 # Structure:  Benchmark directory                             Native           NativeArg         Iter  WasmDir
-#BenchSuite+=("JetStream2/gcc-loops"                         "./gcc-loops"      ""                "1"    "")
-#BenchSuite+=("JetStream2/hashset"                           "./hashset"        ""                "1"    "")
-#BenchSuite+=("JetStream2/quicksort"                         "./quicksort"      ""                "10"    "")
-#BenchSuite+=("JetStream2/tsf"                               "./tsf"            "10000"           "1"    ".")
+BenchSuite+=("JetStream2/gcc-loops"                         "./gcc-loops"      ""                "1"    "")
+BenchSuite+=("JetStream2/hashset"                           "./hashset"        ""                "1"    "")
+BenchSuite+=("JetStream2/quicksort"                         "./quicksort"      ""                "10"    "")
+BenchSuite+=("JetStream2/tsf"                               "./tsf"            "10000"           "1"    ".")
 BenchSuite+=("MiBench/automotive/basicmath"                 "./basicmath"      ""                "1"    "")
 BenchSuite+=("MiBench/automotive/bitcount"                  "./bitcount"       "1125000"         "1"    "")
 BenchSuite+=("MiBench/consumer/jpeg/cjpeg"                  "./cjpeg"      \

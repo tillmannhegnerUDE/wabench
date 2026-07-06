@@ -59,8 +59,12 @@ WORKDIR /home/
 RUN wget https://github.com/WasmEdge/WasmEdge/releases/download/0.17.0/WasmEdge-0.17.0-ubuntu20.04_x86_64.tar.gz && \
     mkdir wasmedge && \
     tar -xzf WasmEdge-0.17.0-ubuntu20.04_x86_64.tar.gz -C ./wasmedge/
+RUN mkdir wazero
+WORKDIR /home/wazero/
+RUN curl https://wazero.io/install.sh | sh
 
 #import code
+WORKDIR /home/
 RUN mkdir wabench
 COPY . /home/wabench
 WORKDIR /home/wabench
