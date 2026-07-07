@@ -14,7 +14,7 @@ RunAOT=false
 
 MeasureMem=false
 
-MeasurePerf=false
+MeasurePerf=true
 
 BenchRoot="/home/wabench"
 

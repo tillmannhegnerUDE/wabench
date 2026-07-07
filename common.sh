@@ -47,10 +47,10 @@ runtest() { # $1: command that will be executed (for native and wasm programs) $
         echo -e "$3:   \t$brmisses branch-misses"
 '
         #version for ubuntu:
-#        sh -c "perf stat -e cache-misses,cache-references $cmd"
-#        cachemisses=$( cat "$2" | grep "cache-misses" | sed 's/      cache-misses.*//' | sed 's/        //' )
-#        cacherefs=$( cat "$2" | grep "cache-references" | sed 's/      cache-references.*//' | sed 's/        //')
-        sh -c "xctrace record --template 'CPU Counters' --output $2.trace --launch -- $cmd"
+        sh -c "perf stat -e cache-misses,cache-references $cmd"
+        cachemisses=$( cat "$2" | grep "cache-misses" | sed 's/      cache-misses.*//' | sed 's/        //' )
+        cacherefs=$( cat "$2" | grep "cache-references" | sed 's/      cache-references.*//' | sed 's/        //')
+#        sh -c "xctrace record --template 'CPU Counters' --output $2.trace --launch -- $cmd"
         cat "$2"
 #        echo -e "$3:   \t$cachemisses cache-misses"
 #        echo -e "$3:   \t$cacherefs cache-references"
