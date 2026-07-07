@@ -14,7 +14,7 @@ RunAOT=false
 
 MeasureMem=false
 
-MeasurePerf=true
+MeasurePerf=false
 
 BenchRoot="/home/wabench"
 
@@ -101,40 +101,33 @@ then
       done
     echo "" >> $TimesTable
 fi
-for (( idx=0; idx<${#BenchSuite[@]} & ReturnValue==0; idx+=${BenchSize} ));
-do
-    nth=$( echo "scale=0; $idx / $BenchSize" | bc -l)
+
+count=$(find . -mindepth 2 -name "run.sh" | wc -l)
+
+nth=0
+runBenchmarksForProgram() {
+  nth=$((nth+1))
+  echo "[${nth}/${count}] $1"
+}
+
+for file in $(find . -mindepth 2 -type f -name "run.sh"); do
     nth=$((nth+1))
+    echo "[${nth}/${count}] $(dirname "$file")"
+    echo "$(basename $(dirname $file))"
+    cd $(dirname $file) || exit 1
+    . ./run.sh
 
-    # For debugging
-    #if [ "$nth" -ne 4 ]
-    #then
-    #    continue
-    #fi
-
-    echo "[${nth}/${NumBench}] ${BenchSuite[idx]}"
-
-    # Enter benchmark directory
-    cd ${BenchSuite[idx]}
-
-    # Setup environment 
-    Native=${BenchSuite[idx+1]}
-    NativeArg=${BenchSuite[idx+2]}
-    Iter=$( echo ${BenchSuite[idx+3]} | bc -l )
-    WasmDir=${BenchSuite[idx+4]}
-
-    # Check whether this is a dry run
-#    if [ "$1" != "-n" ]
-#    then
-        # Check whether there exist binaries
     if [ ! -f "$Native" ]
     then
-      echo "Building binaries..."
-      Message=$(make 2>&1)
+      if [ "$Language" == "C" ]
+      then
+        echo "Building binaries..."
+        Message=$(make 2>&1)
+      fi
     else
       echo "The binaries seem to already exits"
     fi
-#    fi
+    #    fi
 
     if [ "$1" != "-s" ]
     then
@@ -189,6 +182,7 @@ do
 
     echo ""
 done
+#find . -mindepth 2 -name "run.sh" -execdir ./run.sh \;
 
 if [ $ReturnValue == 1 ]
 then

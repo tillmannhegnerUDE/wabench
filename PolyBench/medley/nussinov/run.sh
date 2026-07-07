@@ -1,5 +1,7 @@
 #!/bin/bash
 
+Language=C
+
 Native=./nussinov
 
 NativeArg=
@@ -12,5 +14,3 @@ RunAOT=false
 
 # Do not check result due to differences
 CheckResult=true
-
-. ../../../common.sh

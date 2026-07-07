@@ -1,5 +1,7 @@
 #!/bin/bash
 
+Language=C
+
 Native=./sha
 
 NativeArg="input_large.asc"
