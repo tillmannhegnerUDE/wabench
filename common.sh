@@ -6,7 +6,7 @@ NativeTimeRes=0
 
 runaot() { # $1: Command that will be executed $2 flag of the run-script
     cmd="$1"
-    if [ "$2" = "-n" ] # dry run
+    if [ $DryRun ] # dry run
     then 
         echo $1
         echo ""
@@ -19,7 +19,7 @@ runaot() { # $1: Command that will be executed $2 flag of the run-script
 
 runtest() { # $1: command that will be executed (for native and wasm programs) $2: path to the output file $3: indicated which runtime the test is run with or if it is run natively $4: if this is "-n", a dry run is started first. The argument "-n" has to be given to the call of run.sh
     cmd="$1 &>$2"
-    if [ "$4" = "-n" ] # dry run
+    if [ $DryRun ] # dry run
     then
         echo $cmd
         echo ""
@@ -90,7 +90,10 @@ NativeTimeRes=$timeRes
 NativeRun=false
 
 #run all runtimes for the current benchmark
-for runtime in $BenchRoot/RuntimeConfigs/*.sh; do . $runtime; done
+for runtime in $BenchRoot/RuntimeConfigs/*.sh; do
+  . $runtime
+
+  ; done
 
 if [ "$1" == "-n" ] # No need to compare results for a dry run
 then

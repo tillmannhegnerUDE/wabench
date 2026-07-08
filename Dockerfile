@@ -39,8 +39,8 @@ RUN apt-get update && apt-get install -y \
 
 #install the wasm compiler
 WORKDIR /opt/
-RUN wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-19/wasi-sdk-19.0-linux.tar.gz && \
-    tar xvf wasi-sdk-19.0-linux.tar.gz
+RUN wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-33/wasi-sdk-33.0-x86_64-linux.tar.gz && \
+    tar -xvf wasi-sdk-33.0-x86_64-linux.tar.gz
 WORKDIR /home/
 RUN curl https://sh.rustup.rs -sSf -o sh.rustup.rs && \
     sh sh.rustup.rs -y
@@ -58,11 +58,11 @@ RUN wget https://github.com/bytecodealliance/wasmtime/releases/download/dev/wasm
 RUN wget https://github.com/WAVM/WAVM/releases/download/nightly%2F2026-04-05/wavm-nightly-2026-04-05-linux-x64.tar.gz && \
     tar -xzf wavm-nightly-2026-04-05-linux-x64.tar.gz
 RUN curl https://get.wasmer.io -sSfL | sh -s "v6.1.0"
-RUN wget https://github.com/bytecodealliance/wasm-micro-runtime/archive/refs/tags/WAMR-2.4.4.tar.gz && \
-    tar -xzf WAMR-2.4.4.tar.gz
-WORKDIR /home/wasm-micro-runtime-WAMR-2.4.4/product-mini/platforms/linux/
+RUN wget https://github.com/bytecodealliance/wasm-micro-runtime/archive/refs/tags/WAMR-2.4.5.tar.gz && \
+    tar -xzf WAMR-2.4.5.tar.gz
+WORKDIR /home/wasm-micro-runtime-WAMR-2.4.5/product-mini/platforms/linux/
 RUN mkdir build
-WORKDIR /home/wasm-micro-runtime-WAMR-2.4.4/product-mini/platforms/linux/build/
+WORKDIR /home/wasm-micro-runtime-WAMR-2.4.5/product-mini/platforms/linux/build/
 RUN cmake .. && make
 WORKDIR /home/
 RUN wget https://github.com/WasmEdge/WasmEdge/releases/download/0.17.0/WasmEdge-0.17.0-ubuntu20.04_x86_64.tar.gz && \
@@ -80,4 +80,4 @@ RUN mkdir wabench
 COPY . /home/wabench
 WORKDIR /home/wabench
 
-ENTRYPOINT ["./run.sh", "-n"]
+ENTRYPOINT ["./run.sh", "-c"]

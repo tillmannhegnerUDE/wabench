@@ -1,20 +1,70 @@
 #!/bin/bash
 
-if [ "$1" == "-h" ]
-then
-  echo "Benchmarking tool for WASM runtimes"
-  echo "Options:"
-  echo "  -s perform a smoke test"
-  echo "  -n perform a dry run"
-  echo "  -c skip cleaning up after execution. Output files and binaries persist."
-  exit 0
-fi
-
 RunAOT=false
 
 MeasureMem=false
 
 MeasurePerf=false
+
+SmokeTest=false
+
+DryRun=false
+
+SkipCleaning=false
+
+while getopts "achnmps" opt; do
+    case $opt in
+        a)
+            RunAOT=true
+            ;;
+        c)
+            SkipCleaning=true
+            ;;
+        h)
+            showUsage=true
+            ;;
+        n)
+            DryRun=true
+            ;;
+        m)
+            MeasureMem=true
+            ;;
+        p)
+            MeasurePerf=true
+            ;;
+        s)
+            SmokeTest=true
+            ;;
+        ?)
+            showUsage=true
+            echo "unknown flags"
+            ;;
+    esac
+done
+
+ProgramCount=$(find . -mindepth 2 -name "run.sh" | wc -l | tr -d ' \t')
+RuntimeCount=$(find RuntimeConfigs -maxdepth 1 -name "*.sh" | wc -l | tr -d ' \t')
+
+echo "$RuntimeCount runtimes and $ProgramCount programs where found."
+
+if [ $showUsage ]
+then
+  echo "This is a Benchmarking tool for WASM runtimes"
+  echo "Options:"
+  echo "  -a run with AOT compilation for all runtimes that support it"
+  echo "  -c skip cleaning up after execution. Output files and binaries persist."
+  echo "  -h show this help message"
+  echo "  -n perform a dry run"
+  echo "  -m measure the peak memory consumption"
+  echo "  -p measure performance metrics like number of instructions, number of cache misses and number of branch prediction errors"
+  echo "  -s perform a smoke test"
+  echo ""
+  exit 0
+fi
+
+#echo "aot=$RunAOT, Mem=$MeasureMem, Perf=$MeasurePerf, DryRun=$DryRun, SkipCleaning=$SkipCleaning, SmokeTest=$SmokeTest"
+
+#exit 0
 
 BenchRoot="/home/wabench"
 
@@ -22,76 +72,9 @@ CommonScript="$BenchRoot/common.sh"
 
 TimesTable="timeResults.csv"
 
-BenchSize=5
-BenchSuite=()
-# Structure:  Benchmark directory                             Native           NativeArg         Iter  WasmDir
-BenchSuite+=("JetStream2/gcc-loops"                         "./gcc-loops"      ""                "1"    "")
-BenchSuite+=("JetStream2/hashset"                           "./hashset"        ""                "1"    "")
-BenchSuite+=("JetStream2/quicksort"                         "./quicksort"      ""                "10"    "")
-BenchSuite+=("JetStream2/tsf"                               "./tsf"            "10000"           "1"    ".")
-BenchSuite+=("MiBench/automotive/basicmath"                 "./basicmath"      ""                "1"    "")
-BenchSuite+=("MiBench/automotive/bitcount"                  "./bitcount"       "1125000"         "1"    "")
-BenchSuite+=("MiBench/consumer/jpeg/cjpeg"                  "./cjpeg"      \
-             "-dct int -progressive -opt -outfile output_large_encode.jpeg input_large.ppm" "10" ".")
-BenchSuite+=("MiBench/consumer/jpeg/djpeg"                  "./djpeg"      \
-             "-dct int -ppm -outfile output_large_decode.ppm input_large.jpg" "10" ".")
-BenchSuite+=("MiBench/office/stringsearch"                  "./stringsearch"   ""          "100"  "")
-BenchSuite+=("MiBench/security/blowfish"                    "./blowfish"   \
-             "e input_large.asc output_large.enc 1234567890abcdeffedcba0987654321" "10"  ".")
-BenchSuite+=("MiBench/security/blowfish"                    "./blowfish"   \
-             "d input_large.enc output_large.asc 1234567890abcdeffedcba0987654321" "10"  ".")
-BenchSuite+=("MiBench/security/rijndael"                    "./rijndael"   \
-             "input_large.asc output_large.enc e 1234567890abcdeffedcba09876543211234567890abcdeffedcba0987654321" "10"  ".")
-BenchSuite+=("MiBench/security/rijndael"                    "./rijndael"   \
-             "input_large.enc output_large.dec d 1234567890abcdeffedcba09876543211234567890abcdeffedcba0987654321" "10"  ".")
-BenchSuite+=("MiBench/security/sha"                         "./sha"            "input_large.asc" "10"   ".")
-BenchSuite+=("MiBench/telecomm/adpcm/rawcaudio"             "./rawcaudio"      "< large.pcm"     "10"   ".")
-BenchSuite+=("MiBench/telecomm/adpcm/rawdaudio"             "./rawdaudio"      "< large.adpcm"   "10"   ".")
-BenchSuite+=("MiBench/telecomm/crc32"                       "./crc32"          "large.pcm"       "10"   ".")
-BenchSuite+=("PolyBench/datamining/correlation"             "./correlation"    ""                "1"    "")
-BenchSuite+=("PolyBench/datamining/covariance"              "./covariance"     ""                "1"    "")
-BenchSuite+=("PolyBench/linear-algebra/blas/gemm"           "./gemm"           ""                "1"    "")
-BenchSuite+=("PolyBench/linear-algebra/blas/gemver"         "./gemver"         ""                "10"   "")
-BenchSuite+=("PolyBench/linear-algebra/blas/gesummv"        "./gesummv"        ""                "10"   "")
-BenchSuite+=("PolyBench/linear-algebra/blas/symm"           "./symm"           ""                "1"    "")
-BenchSuite+=("PolyBench/linear-algebra/blas/syr2k"          "./syr2k"          ""                "1"    "")
-BenchSuite+=("PolyBench/linear-algebra/blas/syrk"           "./syrk"           ""                "1"    "")
-BenchSuite+=("PolyBench/linear-algebra/blas/trmm"           "./trmm"           ""                "1"    "")
-BenchSuite+=("PolyBench/linear-algebra/kernels/2mm"         "./2mm"            ""                "1"    "")
-BenchSuite+=("PolyBench/linear-algebra/kernels/3mm"         "./3mm"            ""                "1"    "")
-BenchSuite+=("PolyBench/linear-algebra/kernels/atax"        "./atax"           ""                "1"    "")
-BenchSuite+=("PolyBench/linear-algebra/kernels/bicg"        "./bicg"           ""                "10"   "")
-BenchSuite+=("PolyBench/linear-algebra/kernels/doitgen"     "./doitgen"        ""                "1"   "")
-BenchSuite+=("PolyBench/linear-algebra/kernels/mvt"         "./mvt"            ""                "1"   "")
-BenchSuite+=("PolyBench/linear-algebra/solvers/cholesky"    "./cholesky"       ""                "1"   "")
-BenchSuite+=("PolyBench/linear-algebra/solvers/durbin"      "./durbin"         ""                "10"  "")
-BenchSuite+=("PolyBench/linear-algebra/solvers/gramschmidt" "./gramschmidt"    ""                "1"   "")
-BenchSuite+=("PolyBench/linear-algebra/solvers/lu"          "./lu"             ""                "1"   "")
-BenchSuite+=("PolyBench/linear-algebra/solvers/ludcmp"      "./ludcmp"         ""                "1"   "")
-BenchSuite+=("PolyBench/linear-algebra/solvers/trisolv"     "./trisolv"        ""                "10"  "")
-BenchSuite+=("PolyBench/medley/deriche"                     "./deriche"        ""                "1"   "")
-BenchSuite+=("PolyBench/medley/floyd-warshall"              "./floyd-warshall" ""                "1"   "")
-BenchSuite+=("PolyBench/medley/nussinov"                    "./nussinov"       ""                "1"   "")
-BenchSuite+=("PolyBench/stencils/adi"                       "./adi"            ""                "1"   "")
-BenchSuite+=("PolyBench/stencils/fdtd-2d"                   "./fdtd-2d"        ""                "1"   "")
-BenchSuite+=("PolyBench/stencils/heat-3d"                   "./heat-3d"        ""                "1"   "")
-BenchSuite+=("PolyBench/stencils/jacobi-1d"                 "./jacobi-1d"      ""                "10"  "")
-BenchSuite+=("PolyBench/stencils/jacobi-2d"                 "./jacobi-2d"      ""                "1"   "")
-BenchSuite+=("PolyBench/stencils/seidel-2d"                 "./seidel-2d"      ""                                        "1"   "")
-BenchSuite+=("Benchmarks/bzip2"                             "./bzip2"          "-k -f -z input_file"                     "1"   ".")
-BenchSuite+=("Benchmarks/espeak"                            "./espeak"         "-f input.txt -s 120 -w output_file.wav"  "1"   ".")
-BenchSuite+=("Benchmarks/facedetection"                     "./facedetection"  "input.png"                               "1"   ".")
-BenchSuite+=("Benchmarks/gnuchess"                          "./gnuchess"       "< input"                                 "1"   ".")
-BenchSuite+=("Benchmarks/mnist"                             "./mnist"          ""                                        "1"   ".")
-BenchSuite+=("Benchmarks/snappy"                            "./snappy"         ""                                        "1"   "")
-BenchSuite+=("Benchmarks/whitedb"                           "./whitedb"        ""                                        "1"   "")
-
-NumBench=$( echo "scale=0; ${#BenchSuite[@]} / $BenchSize" | bc -l )
-
-echo "start: ${BenchSuite[0]}"
 Message=""
 ReturnValue=0
-if [ "$1" != "-s" ]
+if [ ! $SmokeTest ]
 then
 
     echo -n "Programm;Native" > $TimesTable
@@ -102,17 +85,16 @@ then
     echo "" >> $TimesTable
 fi
 
-count=$(find . -mindepth 2 -name "run.sh" | wc -l)
 
 nth=0
 runBenchmarksForProgram() {
   nth=$((nth+1))
-  echo "[${nth}/${count}] $1"
+  echo "[${nth}/${ProgramCount}] $1"
 }
 
 for file in $(find . -mindepth 2 -type f -name "run.sh"); do
     nth=$((nth+1))
-    echo "[${nth}/${count}] $(dirname "$file")"
+    echo "[${nth}/${ProgramCount}] $(dirname "$file")"
     echo "$(basename $(dirname $file))"
     cd $(dirname $file) || exit 1
     . ./run.sh
@@ -129,7 +111,7 @@ for file in $(find . -mindepth 2 -type f -name "run.sh"); do
     fi
     #    fi
 
-    if [ "$1" != "-s" ]
+    if [ ! $SmokeTest ]
     then
       if [ ! -f "$Native.wasm" ]
       then
@@ -158,13 +140,13 @@ for file in $(find . -mindepth 2 -type f -name "run.sh"); do
     fi
     Message=""
 
-    if [ "$1" != "-s" ]
+    if [ ! $SmokeTest ]
     then
       # Run benchmark
       TimeTableLine="$Native"
       echo "Running..."
       . $CommonScript
-      if [ "$1" != "-c" ]
+      if [ ! $SkipCleaning ]
       then
         echo "Cleanup..."
         make clean > /dev/null 2>&1
@@ -172,7 +154,7 @@ for file in $(find . -mindepth 2 -type f -name "run.sh"); do
       cd "$BenchRoot"
       echo "$TimeTableLine">>$TimesTable
     else
-      if [ "$1" != "-c" ]
+      if [ ! $SkipCleaning ]
       then
         echo "Cleanup..."
         make clean > /dev/null 2>&1

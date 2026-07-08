@@ -1,4 +1,4 @@
-WAMR="/home/wasm-micro-runtime-WAMR-2.4.4/product-mini/platforms/linux/build/iwasm"
+WAMR="/home/wasm-micro-runtime-WAMR-2.4.5/product-mini/platforms/linux/build/iwasm"
 
 if [ ! -z "$WasmDir" ]
 then
