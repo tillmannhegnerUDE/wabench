@@ -73,3 +73,15 @@ $(MAIN_OBJECT) : $(MAIN)
 
 clean:
 	rm -rf *.o *.out $(TARGET)
+
+Benchmark = CWE23_s01
+
+SRCDIR = .
+SRCSUFFIX = cpp
+
+CFLAGS = -c
+CINCLUDE =
+OPT = -O2
+LDFLAGS = lpthread -lm
+
+include ../../../../Makefile.in

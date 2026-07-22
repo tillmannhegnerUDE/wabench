@@ -74,7 +74,7 @@ TimesTable="timeResults.csv"
 
 Message=""
 ReturnValue=0
-if [ ! $SmokeTest ]
+if [ "$SmokeTest" == "false" ]
 then
 
     echo -n "Programm;Native" > $TimesTable
@@ -92,12 +92,12 @@ runBenchmarksForProgram() {
   echo "[${nth}/${ProgramCount}] $1"
 }
 
-for file in $(find . -mindepth 2 -type f -name "run.sh"); do
+for file in $(find . -mindepth 2 -type f -name "runt.sh"); do
     nth=$((nth+1))
     echo "[${nth}/${ProgramCount}] $(dirname "$file")"
     echo "$(basename $(dirname $file))"
     cd $(dirname $file) || exit 1
-    . ./run.sh
+    . ./runt.sh
 
     if [ ! -f "$Native" ]
     then
@@ -111,7 +111,7 @@ for file in $(find . -mindepth 2 -type f -name "run.sh"); do
     fi
     #    fi
 
-    if [ ! $SmokeTest ]
+    if ["$SmokeTest" == "false" ]
     then
       if [ ! -f "$Native.wasm" ]
       then
@@ -139,8 +139,7 @@ for file in $(find . -mindepth 2 -type f -name "run.sh"); do
         continue
     fi
     Message=""
-
-    if [ ! $SmokeTest ]
+    if [ "$SmokeTest" == "false" ]
     then
       # Run benchmark
       TimeTableLine="$Native"
