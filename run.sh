@@ -111,7 +111,7 @@ for file in $(find . -mindepth 2 -type f -name "runt.sh"); do
     fi
     #    fi
 
-    if ["$SmokeTest" == "false" ]
+    if [ "$SmokeTest" == "false" ]
     then
       if [ ! -f "$Native.wasm" ]
       then
