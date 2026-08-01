@@ -12,7 +12,9 @@ DryRun=false
 
 SkipCleaning=false
 
-while getopts "achnmps" opt; do
+RuntimeFolder="RuntimeConfigs"
+
+while getopts "achnmpst" opt; do
     case $opt in
         a)
             RunAOT=true
@@ -35,6 +37,9 @@ while getopts "achnmps" opt; do
         s)
             SmokeTest=true
             ;;
+        t)
+            RuntimeFolder="RuntimeConfigsTest"
+            ;;
         ?)
             showUsage=true
             echo "unknown flags"
@@ -43,7 +48,7 @@ while getopts "achnmps" opt; do
 done
 
 ProgramCount=$(find . -mindepth 2 -name "run.sh" | wc -l | tr -d ' \t')
-RuntimeCount=$(find RuntimeConfigs -maxdepth 1 -name "*.sh" | wc -l | tr -d ' \t')
+RuntimeCount=$(find $RuntimeFolder-maxdepth 1 -name "*.sh" | wc -l | tr -d ' \t')
 
 echo "$RuntimeCount runtimes and $ProgramCount programs where found."
 
@@ -78,7 +83,7 @@ if [ "$SmokeTest" == "false" ]
 then
 
     echo -n "Programm;Native" > $TimesTable
-    for runtime in $BenchRoot/RuntimeConfigs/*.sh; do
+    for runtime in $BenchRoot/$RuntimeFolder/*.sh; do
       echo -n ";" >> $TimesTable
       if [ "$RunAOT" == "true" ]
       then
@@ -111,11 +116,8 @@ for file in $(find . -mindepth 2 -type f -name "run.sh"); do
 
     if [ ! -f "$Native" ]
     then
-      if [ "$Language" == "C" ]
-      then
-        echo "Building binaries..."
-        Message=$(make 2>&1)
-      fi
+      echo "Building binaries..."
+      Message=$(make 2>&1)
     else
       echo "The binaries seem to already exits"
     fi

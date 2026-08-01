@@ -42,10 +42,19 @@ WORKDIR /opt/
 RUN wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-33/wasi-sdk-33.0-x86_64-linux.tar.gz && \
     tar -xvf wasi-sdk-33.0-x86_64-linux.tar.gz
 WORKDIR /home/
-#I do not remember what this was for:
-#RUN curl https://sh.rustup.rs -sSf -o sh.rustup.rs && \
-#ENV PATH="$PATH:/root/.cargo/bin"
+#I want to run rust, so I need this::
+#RUN curl https://sh.rustup.rs -sSf -o sh.rustup.rs
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="$PATH:/root/.cargo/bin"
+#the wasm compilation target is supported with this:
+RUN rustup target add wasm32-wasip1
+
+# I can not remember what that was for... TODO: remove or find its source
 #RUN cargo install wit-bindgen-cli && cargo install --locked wasm-tools
+
+# to use WASIp2 or 3 I have to set this variable:
+ENV WASI_SDK_PATH=/opt/wasi-sdk-33.0-x86_64-linux
+
 ## this is needed to install the perf tool:
 RUN git clone --depth 1 --branch v6.12 \
         https://github.com/torvalds/linux.git /tmp/linux && \
@@ -72,8 +81,8 @@ RUN wget https://github.com/WasmEdge/WasmEdge/releases/download/0.17.0/WasmEdge-
     tar -xzf WasmEdge-0.17.0-ubuntu20.04_x86_64.tar.gz -C ./wasmedge/
 RUN mkdir wazero && \
     cd wazero && \
-    wget https://github.com/wazero/wazero/releases/download/v1.12.0/wazero_1.12.0_linux_arm64.tar.gz && \
-    tar -xzf wazero_1.12.0_linux_arm64.tar.gz
+    wget https://github.com/wazero/wazero/releases/download/v1.11.0/wazero_1.11.0_linux_amd64.tar.gz && \
+    tar -xzf wazero_1.11.0_linux_amd64.tar.gz
 #RUN curl https://wazero.io/install.sh | sh
 
 #RUN apt-get install -y linux-tools-generic linux-tools-6.12.76-linuxkit linux-cloud-tools-6.12.76-linuxkit
@@ -84,4 +93,4 @@ RUN mkdir wabench
 COPY . /home/wabench
 WORKDIR /home/wabench
 
-ENTRYPOINT ["./run.sh", "-ca"]
+ENTRYPOINT ["./run.sh"]

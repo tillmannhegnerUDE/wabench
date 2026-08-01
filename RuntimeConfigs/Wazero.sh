@@ -2,16 +2,16 @@ Wazero="/home/wazero/wazero"
 
 if [ ! -z "$WasmDir" ]
 then
-  WazeroDir=" --cachedir $WazeroDir"
+  WazeroDir=" --cachedir $WasmDir"
 fi
 
 WazeroNativeArg="$NativeArg"
 
 
-AOTCompilation="$Wazero compile $Wasm -o $WasmAOT"
+AOTCompilation=""
+#Wazero uses AOT by default
+AOTRunCommand="$Wazero run$WazeroDir $Wasm $WazeroNativeArg"
 
-AOTRunCommand="$Wazero run$WazeroDir $WasmAOT $WazeroNativeArg"
-
-RunCommand="$Wazero run$WazeroDir $Wasm $WazeroNativeArg"
+RunCommand="$Wazero run$WazeroDir -interpreter $Wasm $WazeroNativeArg"
 
 AOTavailable=true

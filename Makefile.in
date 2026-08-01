@@ -1,8 +1,15 @@
 Native = ${Benchmark}
 WASM = ${Benchmark}.wasm
 
-SRC = $(wildcard ${SRCDIR}/*.${SRCSUFFIX})
-OBJ = $(SRC:.${SRCSUFFIX}=.o)
+ifeq ($(SRCSUFFIX),rs)
+	SRC = $(wildcard $(SRCDIR)/*.rs)
+	RS = $(SRC)
+	OBJ =
+else
+	SRC = $(wildcard ${SRCDIR}/*.${SRCSUFFIX})
+	RSS =
+	OBJ = $(SRC:.${SRCSUFFIX}=.o)
+endif
 
 CLANG = clang
 
@@ -11,6 +18,7 @@ ifeq (${SRCSUFFIX}, $(filter ${SRCSUFFIX}, cc cpp))
 endif
 
 CC = /usr/bin/${CLANG}
+RUSTC = /root/.cargo/bin/rustc
 
 OPT=-O2
 
@@ -22,11 +30,25 @@ all: ${Native} ${WASM}
 %.o: %.${SRCSUFFIX}
 	${CC} ${CFLAGS} ${OPT} ${CINCLUDE} -c $< -o $@
 
-${Native}: ${OBJ}
-	${CC} ${CFLAGS} ${OPT} $^ ${LDFLAGS} -v -o $@
+${Native}: ${OBJ} ${RS}
+	@if [ -n "${OBJ}" ]; then \
+		${CC} ${CFLAGS} ${OPT} ${OBJ} ${LDFLAGS} -v -o $@; \
+	elif [ -n "${RS}" ]; then \
+		${RUSTC} -C opt-level=2 -C overflow_checks=yes ${RS} -o $@; \
+	else \
+		@echo "Error: No source files to compile to native executable"; \
+		exit 1; \
+	fi
 
 ${WASM}: ${SRC}
-	${WASMCC} ${CFLAGS} ${WASMFLAGS} ${OPT} ${CINCLUDE} $^ -o $@
+	@if [ -n "${OBJ}" ]; then \
+		${WASMCC} ${CFLAGS} ${WASMFLAGS} ${OPT} ${CINCLUDE} $^ -o $@; \
+	elif [ -n "${RS}" ]; then \
+		${RUSTC} --target wasm32-wasip1 $^ -o $@; \
+	else \
+		@echo "Error: No source files to compile to wasm module"; \
+		exit 1; \
+	fi
 
 clean:
 	@echo "Cleaning up..."

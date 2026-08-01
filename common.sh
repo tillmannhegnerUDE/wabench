@@ -93,7 +93,7 @@ NativeTimeRes=$timeRes
 NativeRun=false
 
 #run all runtimes for the current benchmark
-for runtime in $BenchRoot/RuntimeConfigs/*.sh; do
+for runtime in $BenchRoot/$RuntimeFolder/*.sh; do
   RuntimeName="$(basename -s .sh $runtime)"
   . $runtime
   if [ "$RunAOT" == "true" ] && [ "$AOTavailable" == "true" ];
@@ -113,7 +113,7 @@ fi
 if [ "$CheckResult" = "true" ]
 then
     echo "check results ..."
-    for runtime in $BenchRoot/RuntimeConfigs/*.sh; do
+    for runtime in $BenchRoot/$RuntimeFolder/*.sh; do
       diff output_native "output_$(basename -s .sh $runtime)"
     done
 #    diff output_native output_wasmtime
