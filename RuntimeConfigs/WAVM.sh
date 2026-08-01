@@ -5,12 +5,10 @@ then
     WAVMDir=" --mount-root $WasmDir"
 fi
 
-WAVMNativeArg="$NativeArg"
+AOTCompilation="$WAVM compile $Wasm $WasmAOT"
 
-if [ "$RunAOT" = true ]
-then
-runaot "$WAVM compile $Wasm $WasmAOT" $1
-runtest "$WAVM run --precompiled$WAVMDir $WasmAOT $WAVMNativeArg" "output_wavm" "wavm" $1
-else
-runtest "$WAVM run$WAVMDir $Wasm $WAVMNativeArg" "output_wavm" "wavm" $1
-fi
+AOTRunCommand="$WAVM run --precompiled$WAVMDir $WasmAOT $NativeArg"
+
+RunCommand="$WAVM run$WAVMDir $Wasm $NativeArg"
+
+AOTavailable=true

@@ -6,7 +6,7 @@ NativeTimeRes=0
 
 runaot() { # $1: Command that will be executed $2 flag of the run-script
     cmd="$1"
-    if [ $DryRun ] # dry run
+    if [ "$DryRun" == "true" ] # dry run
     then 
         echo $1
         echo ""
@@ -14,26 +14,29 @@ runaot() { # $1: Command that will be executed $2 flag of the run-script
     fi
     timeRes=$(/usr/bin/time -p /bin/bash -c "$cmd" 2>&1 | awk '/user/ {print $2}')
     # depending on the result wanted, I can either choose the time in "real", from the "user" or from the "system"
-    echo -e "AOT compilation time: \t$timeRes seconds"
+    echo -e "AOT compilation time of $RuntimeName: \t$timeRes seconds"
+    TimeTableLine="$TimeTableLine;$timeRes"
 }
 
 runtest() { # $1: command that will be executed (for native and wasm programs) $2: path to the output file $3: indicated which runtime the test is run with or if it is run natively $4: if this is "-n", a dry run is started first. The argument "-n" has to be given to the call of run.sh
-    cmd="$1 &>$2"
-    if [ $DryRun ] # dry run
+    OutputFile="output_$RuntimeName" # this value was formally in the variable $2
+    #the value formally in $3 is now in RuntimeName
+    cmd="$1 &>$OutputFile"
+    if [ "$DryRun" == "true" ] # dry run
     then
         echo $cmd
         echo ""
         return 0
     fi
-    if [ "$MeasureMem" = true ]
+    if [ "$MeasureMem" = "true" ]
     then
         #version for ubuntu:
         # sh -c "/usr/bin/time -v $cmd"
         # mem=$( cat "$2" | grep "Maximum resident set size (kbytes)" | sed 's/.*: //' )
         sh -c "/usr/bin/time -l -p $cmd"
-        mem=$(cat "$2" | grep "maximum resident set size" | sed 's/maximum resident set size//' | xargs)
-        echo -e "$3:   \t$mem kbytes"
-    elif [ "$MeasurePerf" = true ]
+        mem=$(cat "$OutputFile" | grep "maximum resident set size" | sed 's/maximum resident set size//' | xargs)
+        echo -e "$RuntimeName:   \t$mem kbytes"
+    elif [ "$MeasurePerf" = "true" ]
     then
 : '
         sh -c "perf stat $cmd"
@@ -48,10 +51,10 @@ runtest() { # $1: command that will be executed (for native and wasm programs) $
 '
         #version for ubuntu:
         sh -c "perf stat -e cache-misses,cache-references $cmd"
-        cachemisses=$( cat "$2" | grep "cache-misses" | sed 's/      cache-misses.*//' | sed 's/        //' )
-        cacherefs=$( cat "$2" | grep "cache-references" | sed 's/      cache-references.*//' | sed 's/        //')
+        cachemisses=$( cat "$OutputFile" | grep "cache-misses" | sed 's/      cache-misses.*//' | sed 's/        //' )
+        cacherefs=$( cat "$OutputFile" | grep "cache-references" | sed 's/      cache-references.*//' | sed 's/        //')
 #        sh -c "xctrace record --template 'CPU Counters' --output $2.trace --launch -- $cmd"
-        cat "$2"
+        cat "$OutputFile"
 #        echo -e "$3:   \t$cachemisses cache-misses"
 #        echo -e "$3:   \t$cacherefs cache-references"
     else
@@ -61,51 +64,63 @@ runtest() { # $1: command that will be executed (for native and wasm programs) $
           $cmd
         done" 2>&1 | awk '/user/ {print $2}')
       # depending on the result wanted, I can either choose the time in "real", from the "user" or from the "system"
-      echo -e "$3:   \t$timeRes seconds"
+      echo -e "$RuntimeName:   \t$timeRes seconds"
       TimeTableLine="$TimeTableLine;$timeRes"
 #        echo "Total run time: $runtime seconds"
       #echo "Each iter time: $itertime seconds"
-      if [ "$NativeRun" = false ]
+      if [ "$NativeRun" = "false" ]
       then
         timeDiff=$( echo "$timeRes - $NativeTimeRes" | bc -l )
         Res="$(echo "$timeDiff < 0" | bc -l)"
         if [ "$Res" -eq 1 ]
         then
           echo "somehow the runtime was faster."
-          cat $errorOutput
-          cat "$2"
+#          cat "$OutputFile"
         fi
       fi
     fi
-    if grep -q "ERROR\|Error\|error\|Exception\|exception\|Fail\|fail" "$2"
+    if grep -q "ERROR\|Error\|error\|Exception\|exception\|Fail\|fail" "$OutputFile"
     then
-        echo "Error encountered. Please double-check $2"
+        echo "Error encountered. Please double-check $OutputFile"
     fi
 }
 
 echo "normal run"
 NativeRun=true
-runtest "$Native $NativeArg" "output_native" "native" $1
+RuntimeName=native
+runtest "$Native $NativeArg"
 NativeTimeRes=$timeRes
 NativeRun=false
 
 #run all runtimes for the current benchmark
 for runtime in $BenchRoot/RuntimeConfigs/*.sh; do
+  RuntimeName="$(basename -s .sh $runtime)"
   . $runtime
-
-  ; done
+  if [ "$RunAOT" == "true" ] && [ "$AOTavailable" == "true" ];
+  then
+    runaot "$AOTCompilation"
+    runtest "$AOTRunCommand"
+  else
+    runtest "$RunCommand"
+  fi
+  done
 
 if [ "$1" == "-n" ] # No need to compare results for a dry run
 then
     return 0
 fi
 
-if [ "$CheckResult" = true ]
+if [ "$CheckResult" = "true" ]
 then
     echo "check results ..."
-    diff output_native output_wasmtime
-    diff output_native output_wavm
-    diff output_native output_wasmer
-    diff output_native output_wasm3
-    diff output_native output_wamr
+    for runtime in $BenchRoot/RuntimeConfigs/*.sh; do
+      diff output_native "output_$(basename -s .sh $runtime)"
+    done
+#    diff output_native output_wasmtime
+#    diff output_native output_wavm
+#    diff output_native output_wasmer
+#    diff output_native output_wasm3
+#    diff output_native output_wamr
+else
+  echo "The results might differ for this program."
 fi

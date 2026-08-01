@@ -7,9 +7,7 @@ fi
 
 WAMRNativeArg="$NativeArg"
 
-if [ "$RunAOT" = false ]
-then
-#echo ""
-# 32KB stack size for WAMR
-runtest "$WAMR --stack-size=32768 $WAMRDir $Wasm $WAMRNativeArg" "output_wamr" "wamr" $1
-fi
+
+RunCommand="$WAMR --stack-size=32768 $WAMRDir $Wasm $WAMRNativeArg"
+
+AOTavailable=false

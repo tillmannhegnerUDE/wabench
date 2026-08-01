@@ -7,10 +7,11 @@ fi
 
 WasmtimeNativeArg="$NativeArg"
 
-if [ "$RunAOT" = true ]
-then
-runaot "$Wasmtime compile $Wasm -o $WasmAOT" $1
-runtest "$Wasmtime run --allow-precompiled$WasmtimeDir $WasmAOT $WasmtimeNativeArg" "output_wasmtime" "wasmtime" $1
-else
-runtest "$Wasmtime run$WasmtimeDir $Wasm $WasmtimeNativeArg" "output_wasmtime" "wasmtime" $1
-fi
+
+AOTCompilation="$Wasmtime compile $Wasm -o $WasmAOT"
+
+AOTRunCommand="$Wasmtime run --allow-precompiled$WasmtimeDir $WasmAOT $WasmtimeNativeArg"
+
+RunCommand="$Wasmtime run$WasmtimeDir $Wasm $WasmtimeNativeArg"
+
+AOTavailable=true

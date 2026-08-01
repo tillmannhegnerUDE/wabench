@@ -10,4 +10,3 @@ Iter=1
 
 WasmDir=.
 
-RunAOT=false

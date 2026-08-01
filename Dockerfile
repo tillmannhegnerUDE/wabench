@@ -42,14 +42,16 @@ WORKDIR /opt/
 RUN wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-33/wasi-sdk-33.0-x86_64-linux.tar.gz && \
     tar -xvf wasi-sdk-33.0-x86_64-linux.tar.gz
 WORKDIR /home/
-RUN curl https://sh.rustup.rs -sSf -o sh.rustup.rs && \
-    sh sh.rustup.rs -y
-ENV PATH="$PATH:/root/.cargo/bin"
-RUN cargo install wit-bindgen-cli && cargo install --locked wasm-tools
+#I do not remember what this was for:
+#RUN curl https://sh.rustup.rs -sSf -o sh.rustup.rs && \
+#ENV PATH="$PATH:/root/.cargo/bin"
+#RUN cargo install wit-bindgen-cli && cargo install --locked wasm-tools
+## this is needed to install the perf tool:
 RUN git clone --depth 1 --branch v6.12 \
-        https://github.com/torvalds/linux.git /tmp/linux
-WORKDIR /tmp/linux/tools/perf/
-RUN make && cp perf /usr/local/bin/
+        https://github.com/torvalds/linux.git /tmp/linux && \
+    make -C /tmp/linux/tools/perf/ -f /tmp/linux/tools/perf/Makefile &&  \
+    cp /tmp/linux/tools/perf/perf /usr/local/bin/ && \
+    rm -rf ./linux
 
 WORKDIR /home/
 #install the runtimes
@@ -68,9 +70,11 @@ WORKDIR /home/
 RUN wget https://github.com/WasmEdge/WasmEdge/releases/download/0.17.0/WasmEdge-0.17.0-ubuntu20.04_x86_64.tar.gz && \
     mkdir wasmedge && \
     tar -xzf WasmEdge-0.17.0-ubuntu20.04_x86_64.tar.gz -C ./wasmedge/
-RUN mkdir wazero
-WORKDIR /home/wazero/
-RUN curl https://wazero.io/install.sh | sh
+RUN mkdir wazero && \
+    cd wazero && \
+    wget https://github.com/wazero/wazero/releases/download/v1.12.0/wazero_1.12.0_linux_arm64.tar.gz && \
+    tar -xzf wazero_1.12.0_linux_arm64.tar.gz
+#RUN curl https://wazero.io/install.sh | sh
 
 #RUN apt-get install -y linux-tools-generic linux-tools-6.12.76-linuxkit linux-cloud-tools-6.12.76-linuxkit
 
@@ -80,4 +84,4 @@ RUN mkdir wabench
 COPY . /home/wabench
 WORKDIR /home/wabench
 
-ENTRYPOINT ["./run.sh", "-c"]
+ENTRYPOINT ["./run.sh", "-ca"]

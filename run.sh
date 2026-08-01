@@ -74,12 +74,22 @@ TimesTable="timeResults.csv"
 
 Message=""
 ReturnValue=0
-if [ ! $SmokeTest ]
+if [ "$SmokeTest" == "false" ]
 then
 
     echo -n "Programm;Native" > $TimesTable
     for runtime in $BenchRoot/RuntimeConfigs/*.sh; do
       echo -n ";" >> $TimesTable
+      if [ "$RunAOT" == "true" ]
+      then
+        . $runtime
+        if [ "$AOTavailable" == "true" ]
+        then
+          basename -s .sh "$runtime" | tr -d '\n' >> $TimesTable;
+          echo -n "Compilation" >> $TimesTable
+          echo -n ";" >> $TimesTable
+        fi
+      fi
       basename -s .sh "$runtime" | tr -d '\n' >> $TimesTable;
       done
     echo "" >> $TimesTable
@@ -111,7 +121,7 @@ for file in $(find . -mindepth 2 -type f -name "run.sh"); do
     fi
     #    fi
 
-    if [ ! $SmokeTest ]
+    if [ "$SmokeTest" == false ]
     then
       if [ ! -f "$Native.wasm" ]
       then
@@ -140,13 +150,13 @@ for file in $(find . -mindepth 2 -type f -name "run.sh"); do
     fi
     Message=""
 
-    if [ ! $SmokeTest ]
+    if [ "$SmokeTest" == "false" ]
     then
       # Run benchmark
       TimeTableLine="$Native"
       echo "Running..."
       . $CommonScript
-      if [ ! $SkipCleaning ]
+      if [ "$SkipCleaning" == "false" ]
       then
         echo "Cleanup..."
         make clean > /dev/null 2>&1
@@ -154,7 +164,7 @@ for file in $(find . -mindepth 2 -type f -name "run.sh"); do
       cd "$BenchRoot"
       echo "$TimeTableLine">>$TimesTable
     else
-      if [ ! $SkipCleaning ]
+      if [ "$SkipCleaning" == "false" ]
       then
         echo "Cleanup..."
         make clean > /dev/null 2>&1

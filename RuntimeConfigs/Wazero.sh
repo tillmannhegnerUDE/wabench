@@ -1,4 +1,4 @@
-Wazero="/home/wazero/bin/wazero"
+Wazero="/home/wazero/wazero"
 
 if [ ! -z "$WasmDir" ]
 then
@@ -7,10 +7,11 @@ fi
 
 WazeroNativeArg="$NativeArg"
 
-if [ "$RunAOT" = true ]
-then
-runaot "$Wazero compile $Wasm -o $WasmAOT" $1
-runtest "$Wazero run$WazeroDir $WasmAOT $WazeroNativeArg" "output_wazero" "wazero" $1
-else
-runtest "$Wazero run$WazeroDir $Wasm $WazeroNativeArg" "output_wazero" "wazero" $1
-fi
+
+AOTCompilation="$Wazero compile $Wasm -o $WasmAOT"
+
+AOTRunCommand="$Wazero run$WazeroDir $WasmAOT $WazeroNativeArg"
+
+RunCommand="$Wazero run$WazeroDir $Wasm $WazeroNativeArg"
+
+AOTavailable=true

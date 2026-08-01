@@ -6,4 +6,3 @@ Native=./quicksort
 
 Iter=10
 
-RunAOT=false

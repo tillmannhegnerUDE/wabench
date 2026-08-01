@@ -7,11 +7,11 @@ fi
 
 WasmEdgeNativeArg="-- $NativeArg"
 
-if [ "$RunAOT" = true ]
-then
-  #todo
-runaot "$WasmEdge compile $Wasm $WasmAOT" $1
-runtest "$WasmEdge run$WasmEdgeDir $WasmAOT $WasmEdgeNativeArg" "output_wasmEdge" "wasmEdge" $1
-else
-runtest "$WasmEdge run$WasmEdgeDir $Wasm $WasmEdgeNativeArg" "output_wasmEdge" "wasmEdge" $1
-fi
+
+AOTCompilation="$WasmEdge compile $Wasm $WasmAOT"
+
+AOTRunCommand="$WasmEdge run$WasmEdgeDir $WasmAOT $WasmEdgeNativeArg"
+
+RunCommand="$WasmEdge run$WasmEdgeDir $Wasm $WasmEdgeNativeArg"
+
+AOTavailable=true
