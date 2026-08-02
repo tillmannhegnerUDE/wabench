@@ -117,7 +117,12 @@ for file in $(find . -mindepth 2 -type f -name "run.sh"); do
     if [ ! -f "$Native" ]
     then
       echo "Building binaries..."
-      Message=$(make 2>&1)
+      if [ ! -f "Cargo.toml" ]
+      then
+        Message=$(make 2>&1)
+      else
+        Message=$(cargo build && cargo rustc --target wasm32-wasip1 2>&1)
+      fi
     else
       echo "The binaries seem to already exits"
     fi
@@ -155,7 +160,7 @@ for file in $(find . -mindepth 2 -type f -name "run.sh"); do
     if [ "$SmokeTest" == "false" ]
     then
       # Run benchmark
-      TimeTableLine="$Native"
+      TimeTableLine="$(basename $(dirname $file))"
       echo "Running..."
       . $CommonScript
       if [ "$SkipCleaning" == "false" ]

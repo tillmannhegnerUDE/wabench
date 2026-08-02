@@ -65,7 +65,12 @@ runtest() { # $1: command that will be executed (for native and wasm programs) $
         done" 2>&1 | awk '/user/ {print $2}')
       # depending on the result wanted, I can either choose the time in "real", from the "user" or from the "system"
       echo -e "$RuntimeName:   \t$timeRes seconds"
-      TimeTableLine="$TimeTableLine;$timeRes"
+      if grep -q "ERROR\|Error\|error\|Exception\|exception\|Fail\|fail" "$OutputFile"
+      then
+        TimeTableLine="$TimeTableLine;Null"
+      else
+        TimeTableLine="$TimeTableLine;$timeRes"
+      fi
 #        echo "Total run time: $runtime seconds"
       #echo "Each iter time: $itertime seconds"
       if [ "$NativeRun" = "false" ]
