@@ -51,15 +51,29 @@ runtest() { # $1: command that will be executed (for native and wasm programs) $
         echo -e "$3:   \t$brmisses branch-misses"
 '
         #version for ubuntu:
-        perf stat -e cache-misses,cache-references $cmd >> tmp_out
-        cachemisses=$( cat tmp_out | grep "cache-misses" | awk '{print $1}' )
-        cacherefs=$( cat tmp_out | grep "cache-references" | awk '{print $1}')
+        # tmp_out=$(perf stat -e cache-misses,cache-references $cmd 2>&1)
+        echo "$(sh -c "perf stat -e cache-misses,cache-references,cycles,instructions,branches,branch-misses $cmd" 2>&1)" > tmp_out
+        cachemisses=$( cat tmp_out | grep "cache-misses" | awk '{print $1}' | tr -d '\n' )
+        cacherefs=$( cat tmp_out | grep "cache-references" | awk '{print $1}' | tr -d '\n' )
+        cycles=$( cat tmp_out | grep "cycles" | awk '{print $1}' | tr -d '\n' )
+        instructions=$( cat tmp_out | grep "instructions" | awk '{print $1}' | tr -d '\n' )
+        branches=$( cat tmp_out | grep "branches" | awk '{print $1}' | tr -d '\n' )
+        branchmisses=$( cat tmp_out | grep "branch-misses" | awk '{print $1}' | tr -d '\n' )
 #        sh -c "xctrace record --template 'CPU Counters' --output $2.trace --launch -- $cmd"
 #        cat "$OutputFile"
         PerformanceTableLine="$PerformanceTableLine;$cachemisses"
         PerformanceTableLine="$PerformanceTableLine;$cacherefs"
-        echo -e "$3:   \t$cachemisses cache-misses"
-        echo -e "$3:   \t$cacherefs cache-references"
+        PerformanceTableLine="$PerformanceTableLine;$cycles"
+        PerformanceTableLine="$PerformanceTableLine;$instructions"
+        PerformanceTableLine="$PerformanceTableLine;$branches"
+        PerformanceTableLine="$PerformanceTableLine;$branchmisses"
+        echo -e "$RuntimeName:   \t$cachemisses cache misses"
+        echo -e "$RuntimeName:   \t$cacherefs cache-references"
+        echo -e "$RuntimeName:   \t$cycles cycles"
+        echo -e "$RuntimeName:   \t$instructions instructions"
+        echo -e "$RuntimeName:   \t$branches branches"
+        echo -e "$RuntimeName:   \t$branchmisses branch misses"
+        rm tmp_out
     else
 #      /bin/bash -c $Wasm3
       timeRes=$(/usr/bin/time -p /bin/bash -c "for (( i=1; i<=$Iter; i++ ))

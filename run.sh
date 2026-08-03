@@ -99,6 +99,18 @@ then
         echo -n ";" >> $PerfTable
         echo -n "CacheRefs" >> $PerfTable
         basename -s .sh "$runtime" | tr -d '\n' >> $PerfTable;
+        echo -n ";" >> $PerfTable
+        echo -n "Cycles" >> $PerfTable
+        basename -s .sh "$runtime" | tr -d '\n' >> $PerfTable;
+        echo -n ";" >> $PerfTable
+        echo -n "Instructions" >> $PerfTable
+        basename -s .sh "$runtime" | tr -d '\n' >> $PerfTable;
+        echo -n ";" >> $PerfTable
+        echo -n "Branches" >> $PerfTable
+        basename -s .sh "$runtime" | tr -d '\n' >> $PerfTable;
+        echo -n ";" >> $PerfTable
+        echo -n "BranchMisses" >> $PerfTable
+        basename -s .sh "$runtime" | tr -d '\n' >> $PerfTable;
       done
       echo "" >> $PerfTable
     elif [ "$MeasureMem" = "true" ]
@@ -208,7 +220,7 @@ for file in $(find . -mindepth 2 -type f -name "run.sh"); do
       cd "$BenchRoot"
       if [ "$MeasurePerf" == "true" ]
       then
-        echo "$PerformanceTableLine">>$PerformanceTable
+        echo "$PerformanceTableLine">>$PerfTable
       elif [ "$MeasureMem" = "true" ]
       then
         echo "$MemoryTableLine">>$MemoryTable
