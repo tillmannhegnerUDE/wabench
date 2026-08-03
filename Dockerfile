@@ -1,6 +1,8 @@
 FROM snowstep/llvm:jammy
 LABEL authors="tillmannhegner"
 
+ENV PATH="$PATH:/usr/lib/llvm-23/bin"
+
 RUN apt-get update && apt-get install -y \
     curl \
     wget \
@@ -35,7 +37,6 @@ RUN apt-get update && apt-get install -y \
     zlib1g-dev  \
     pkg-config  \
     libtraceevent-dev
-
 
 #install the wasm compiler
 WORKDIR /opt/
@@ -83,10 +84,13 @@ RUN mkdir wazero && \
     cd wazero && \
     wget https://github.com/wazero/wazero/releases/download/v1.11.0/wazero_1.11.0_linux_amd64.tar.gz && \
     tar -xzf wazero_1.11.0_linux_amd64.tar.gz
-RUN wget https://github.com/nasa/spacewasm/archive/refs/tags/v0.5.1.tar.gz && \
-    tar -xzf v0.5.1.tar.gz && \
-    cd spacewasm-0.5.1 && \
-    cargo build -p spacewasi
+RUN wget https://github.com/nasa/spacewasm/archive/refs/tags/v0.4.5.tar.gz && \
+    tar -xzf v0.4.5.tar.gz && \
+    cargo install --path ./spacewasm-0.4.5/crates/spacewasi/ && \
+    cp ./spacewasm-0.4.5/crates/spacewasi/scripts/wasm2mvp.sh ./wasm2mvp.sh && \
+    wget https://github.com/WebAssembly/binaryen/releases/download/version_131/binaryen-version_131-x86_64-linux.tar.gz && \
+    tar -xzf binaryen-version_131-x86_64-linux.tar.gz
+ENV PATH="$PATH:/home/binaryen-version_131/bin"
 #RUN apt-get install -y linux-tools-generic linux-tools-6.12.76-linuxkit linux-cloud-tools-6.12.76-linuxkit
 
 #import code

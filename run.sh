@@ -54,7 +54,7 @@ then
 fi
 
 ProgramCount=$(find . -mindepth 2 -name "run.sh" | wc -l | tr -d ' \t')
-RuntimeCount=$(find $RuntimeFolder-maxdepth 1 -name "*.sh" | wc -l | tr -d ' \t')
+RuntimeCount=$(find $RuntimeFolder -maxdepth 1 -name "*.sh" | wc -l | tr -d ' \t')
 
 echo "$RuntimeCount runtimes and $ProgramCount programs where found."
 
