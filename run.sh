@@ -47,6 +47,12 @@ while getopts "achnmpst" opt; do
     esac
 done
 
+if [ "$MeasurePerf" = "true " ] && [ "$MeasureMem" == "true" ]
+then
+  echo "Performance and memory consumption can not be meassured in the same run."
+  exit 1
+fi
+
 ProgramCount=$(find . -mindepth 2 -name "run.sh" | wc -l | tr -d ' \t')
 RuntimeCount=$(find $RuntimeFolder-maxdepth 1 -name "*.sh" | wc -l | tr -d ' \t')
 
@@ -76,7 +82,8 @@ BenchRoot="/home/wabench"
 CommonScript="$BenchRoot/common.sh"
 
 TimesTable="timeResults.csv"
-PerfTable="performanceRestuls.csv"
+PerfTable="performanceResults.csv"
+MemoryTable="memoryResults.csv"
 
 Message=""
 ReturnValue=0
@@ -84,16 +91,24 @@ if [ "$SmokeTest" == "false" ]
 then
     if [ "$MeasurePerf" == "true" ]
     then
-      echo -n "Programm;Native" > $PerfTable
+      echo -n "Programm;CacheMissesNative;CacheRefsNative" > $PerfTable
       for runtime in $BenchRoot/$RuntimeFolder/*.sh; do
         echo -n ";" >> $TimesTable
         echo -n "CacheMisses" >> $TimesTable
-        basename -s .sh "$runtime" | tr -d '\n' >> $TimesTable;
+        basename -s .sh "$runtime" | tr -d '\n' >> $PerfTable;
         echo -n ";" >> $TimesTable
         echo -n "CacheRefs" >> $TimesTable
-        basename -s .sh "$runtime" | tr -d '\n' >> $TimesTable;
+        basename -s .sh "$runtime" | tr -d '\n' >> $PerfTable;
       done
     else
+      if [ "$MeasureMem" = "true" ]
+      then
+        echo -n "Programm;Native" > $MemoryTable
+        for runtime in $BenchRoot/$RuntimeFolder/*.sh; do
+          echo -n ";" >> $MemoryTable
+          basename -s .sh "$runtime" | tr -d '\n' >> $MemoryTable;
+        done
+      fi
       echo -n "Programm;Native" > $TimesTable
       for runtime in $BenchRoot/$RuntimeFolder/*.sh; do
         echo -n ";" >> $TimesTable

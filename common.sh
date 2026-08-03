@@ -54,7 +54,7 @@ runtest() { # $1: command that will be executed (for native and wasm programs) $
         cachemisses=$( cat "$OutputFile" | grep "cache-misses" | sed 's/      cache-misses.*//' | sed 's/        //' )
         cacherefs=$( cat "$OutputFile" | grep "cache-references" | sed 's/      cache-references.*//' | sed 's/        //')
 #        sh -c "xctrace record --template 'CPU Counters' --output $2.trace --launch -- $cmd"
-        cat "$OutputFile"
+#        cat "$OutputFile"
         PerformanceTableLine="$PerformanceTableLine;$cachemisses"
         PerformanceTableLine="$PerformanceTableLine;$cacherefs"
         echo -e "$3:   \t$cachemisses cache-misses"
