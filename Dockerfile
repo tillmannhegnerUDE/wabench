@@ -83,8 +83,10 @@ RUN mkdir wazero && \
     cd wazero && \
     wget https://github.com/wazero/wazero/releases/download/v1.11.0/wazero_1.11.0_linux_amd64.tar.gz && \
     tar -xzf wazero_1.11.0_linux_amd64.tar.gz
-#RUN curl https://wazero.io/install.sh | sh
-
+RUN wget https://github.com/nasa/spacewasm/archive/refs/tags/v0.5.1.tar.gz && \
+    tar -xzf v0.5.1.tar.gz && \
+    cd spacewasm-0.5.1 && \
+    cargo build -p spacewasi
 #RUN apt-get install -y linux-tools-generic linux-tools-6.12.76-linuxkit linux-cloud-tools-6.12.76-linuxkit
 
 #import code
