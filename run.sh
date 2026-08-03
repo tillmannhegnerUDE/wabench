@@ -76,28 +76,41 @@ BenchRoot="/home/wabench"
 CommonScript="$BenchRoot/common.sh"
 
 TimesTable="timeResults.csv"
+PerfTable="performanceRestuls.csv"
 
 Message=""
 ReturnValue=0
 if [ "$SmokeTest" == "false" ]
 then
-
-    echo -n "Programm;Native" > $TimesTable
-    for runtime in $BenchRoot/$RuntimeFolder/*.sh; do
-      echo -n ";" >> $TimesTable
-      if [ "$RunAOT" == "true" ]
-      then
-        . $runtime
-        if [ "$AOTavailable" == "true" ]
-        then
-          basename -s .sh "$runtime" | tr -d '\n' >> $TimesTable;
-          echo -n "Compilation" >> $TimesTable
-          echo -n ";" >> $TimesTable
-        fi
-      fi
-      basename -s .sh "$runtime" | tr -d '\n' >> $TimesTable;
+    if [ "$MeasurePerf" == "true" ]
+    then
+      echo -n "Programm;Native" > $PerfTable
+      for runtime in $BenchRoot/$RuntimeFolder/*.sh; do
+        echo -n ";" >> $TimesTable
+        echo -n "CacheMisses" >> $TimesTable
+        basename -s .sh "$runtime" | tr -d '\n' >> $TimesTable;
+        echo -n ";" >> $TimesTable
+        echo -n "CacheRefs" >> $TimesTable
+        basename -s .sh "$runtime" | tr -d '\n' >> $TimesTable;
       done
-    echo "" >> $TimesTable
+    else
+      echo -n "Programm;Native" > $TimesTable
+      for runtime in $BenchRoot/$RuntimeFolder/*.sh; do
+        echo -n ";" >> $TimesTable
+        if [ "$RunAOT" == "true" ]
+        then
+          . $runtime
+          if [ "$AOTavailable" == "true" ]
+          then
+            basename -s .sh "$runtime" | tr -d '\n' >> $TimesTable;
+            echo -n "Compilation" >> $TimesTable
+            echo -n ";" >> $TimesTable
+          fi
+        fi
+        basename -s .sh "$runtime" | tr -d '\n' >> $TimesTable;
+        done
+      echo "" >> $TimesTable
+    fi
 fi
 
 
@@ -160,7 +173,12 @@ for file in $(find . -mindepth 2 -type f -name "run.sh"); do
     if [ "$SmokeTest" == "false" ]
     then
       # Run benchmark
-      TimeTableLine="$(basename $(dirname $file))"
+      if [ "$MeasurePerf" == "true" ]
+      then
+        PerformanceTableLine="$(basename $(dirname $file))"
+      else
+        TimeTableLine="$(basename $(dirname $file))"
+      fi
       echo "Running..."
       . $CommonScript
       if [ "$SkipCleaning" == "false" ]
@@ -169,7 +187,12 @@ for file in $(find . -mindepth 2 -type f -name "run.sh"); do
         make clean > /dev/null 2>&1
       fi
       cd "$BenchRoot"
-      echo "$TimeTableLine">>$TimesTable
+      if [ "$MeasurePerf" == "true" ]
+      then
+        echo "$PerformanceTableLine">>$PerformanceTable
+      else
+        echo "$TimeTableLine">>$TimesTable
+      fi
     else
       if [ "$SkipCleaning" == "false" ]
       then

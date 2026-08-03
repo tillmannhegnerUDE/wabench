@@ -55,8 +55,10 @@ runtest() { # $1: command that will be executed (for native and wasm programs) $
         cacherefs=$( cat "$OutputFile" | grep "cache-references" | sed 's/      cache-references.*//' | sed 's/        //')
 #        sh -c "xctrace record --template 'CPU Counters' --output $2.trace --launch -- $cmd"
         cat "$OutputFile"
-#        echo -e "$3:   \t$cachemisses cache-misses"
-#        echo -e "$3:   \t$cacherefs cache-references"
+        PerformanceTableLine="$PerformanceTableLine;$cachemisses"
+        PerformanceTableLine="$PerformanceTableLine;$cacherefs"
+        echo -e "$3:   \t$cachemisses cache-misses"
+        echo -e "$3:   \t$cacherefs cache-references"
     else
 #      /bin/bash -c $Wasm3
       timeRes=$(/usr/bin/time -p /bin/bash -c "for (( i=1; i<=$Iter; i++ ))
