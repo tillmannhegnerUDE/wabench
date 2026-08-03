@@ -41,6 +41,11 @@ When using the -m or -p option, no other measurement takes place in that run.
 
 The maximal memory consumption is saved in kilobytes.
 
+The "RuntimeConfigs"-folder contains shell scripts that define how different WebAssembly runtimes are used.
+They have to contain four at least two variables: the command for running the runtime and a variable which denotes whether ahead-of-time (AOT) compilation is possible for this runtime.
+If it is possible, two additional variables for the compile-command and the run-commmand with AOT are necessary.
+To remove or add a runtime from the benchmark, these scripts have to be removed or added.
+
 ## Results
 
 The results of the benchmark are saved in csv files.
