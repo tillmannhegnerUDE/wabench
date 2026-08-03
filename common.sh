@@ -33,9 +33,10 @@ runtest() { # $1: command that will be executed (for native and wasm programs) $
         #version for ubuntu:
         # sh -c "/usr/bin/time -v $cmd"
         # mem=$( cat "$2" | grep "Maximum resident set size (kbytes)" | sed 's/.*: //' )
-        sh -c "/usr/bin/time -l -p $cmd"
-        mem=$(cat "$OutputFile" | grep "maximum resident set size" | sed 's/maximum resident set size//' | xargs)
+        mem=$(/usr/bin/time -v -p /bin/bash -c "$cmd" 2>&1 | grep "Maximum resident set size" | awk '{print $6}')
+#        mem=$(cat "$OutputFile" | grep "Maximum resident set size (kbytes): " | sed 's/Maximum resident set size (kbytes): //' | xargs)
         echo -e "$RuntimeName:   \t$mem kbytes"
+        MemoryTableLine="$MemoryTableLine;$mem"
     elif [ "$MeasurePerf" = "true" ]
     then
 : '
@@ -51,8 +52,8 @@ runtest() { # $1: command that will be executed (for native and wasm programs) $
 '
         #version for ubuntu:
         sh -c "perf stat -e cache-misses,cache-references $cmd"
-        cachemisses=$( cat "$OutputFile" | grep "cache-misses" | sed 's/      cache-misses.*//' | sed 's/        //' )
-        cacherefs=$( cat "$OutputFile" | grep "cache-references" | sed 's/      cache-references.*//' | sed 's/        //')
+        cachemisses=$( cat "$OutputFile" | grep "cache-misses" | awk '{print $1}' )
+        cacherefs=$( cat "$OutputFile" | grep "cache-references" | awk '{print $1}')
 #        sh -c "xctrace record --template 'CPU Counters' --output $2.trace --launch -- $cmd"
 #        cat "$OutputFile"
         PerformanceTableLine="$PerformanceTableLine;$cachemisses"

@@ -34,8 +34,12 @@ Some options are offered to run with different configurations:
     '--cap-add=SYS_ADMIN --privileged -it' have to be added to the 'run' command)  
 -s perform a smoke test
 ```
-Time metrics are always meassured except when the -p option is used.
-Memory consumption can be meassured in the same run as time meassurements, but not when -p is used.
+
+Time metrics are meassured if neither memory nor performance is meassured.
+When using the -m or -p option, no other measurement takes place in that run.
+(And this means that the options can not be combined.)
+
+The maximal memory consumption is saved in kilobytes.
 
 ## Results
 
@@ -44,4 +48,9 @@ To get the execution times out of the container, run
 ```commandline
 $ docker cp <container-id>:/home/wabench/timeResults.csv <directory on host to save to>
 ```
-The performance metrics can be 
+The performance metrics and memory consumption can be pulled out of the container with the following commands:
+```commandline
+$ docker cp <container-id>:/home/wabench/performanceResults.csv <directory on host to save to>
+
+$ docker cp <container-id>:/home/wabench/memoryResults.csv <directory on host to save to>
+```

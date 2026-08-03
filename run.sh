@@ -93,22 +93,23 @@ then
     then
       echo -n "Programm;CacheMissesNative;CacheRefsNative" > $PerfTable
       for runtime in $BenchRoot/$RuntimeFolder/*.sh; do
-        echo -n ";" >> $TimesTable
-        echo -n "CacheMisses" >> $TimesTable
+        echo -n ";" >> $PerfTable
+        echo -n "CacheMisses" >> $PerfTable
         basename -s .sh "$runtime" | tr -d '\n' >> $PerfTable;
-        echo -n ";" >> $TimesTable
-        echo -n "CacheRefs" >> $TimesTable
+        echo -n ";" >> $PerfTable
+        echo -n "CacheRefs" >> $PerfTable
         basename -s .sh "$runtime" | tr -d '\n' >> $PerfTable;
       done
+      echo "" >> $PerfTable
+    elif [ "$MeasureMem" = "true" ]
+    then
+      echo -n "Programm;Native" > $MemoryTable
+      for runtime in $BenchRoot/$RuntimeFolder/*.sh; do
+        echo -n ";" >> $MemoryTable
+        basename -s .sh "$runtime" | tr -d '\n' >> $MemoryTable;
+      done
+      echo "" >> $MemoryTable
     else
-      if [ "$MeasureMem" = "true" ]
-      then
-        echo -n "Programm;Native" > $MemoryTable
-        for runtime in $BenchRoot/$RuntimeFolder/*.sh; do
-          echo -n ";" >> $MemoryTable
-          basename -s .sh "$runtime" | tr -d '\n' >> $MemoryTable;
-        done
-      fi
       echo -n "Programm;Native" > $TimesTable
       for runtime in $BenchRoot/$RuntimeFolder/*.sh; do
         echo -n ";" >> $TimesTable
@@ -191,6 +192,9 @@ for file in $(find . -mindepth 2 -type f -name "run.sh"); do
       if [ "$MeasurePerf" == "true" ]
       then
         PerformanceTableLine="$(basename $(dirname $file))"
+      elif [ "$MeasureMem" = "true" ]
+      then
+        MemoryTableLine="$(basename $(dirname $file))"
       else
         TimeTableLine="$(basename $(dirname $file))"
       fi
@@ -205,6 +209,9 @@ for file in $(find . -mindepth 2 -type f -name "run.sh"); do
       if [ "$MeasurePerf" == "true" ]
       then
         echo "$PerformanceTableLine">>$PerformanceTable
+      elif [ "$MeasureMem" = "true" ]
+      then
+        echo "$MemoryTableLine">>$MemoryTable
       else
         echo "$TimeTableLine">>$TimesTable
       fi
