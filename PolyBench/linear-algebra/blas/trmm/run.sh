@@ -10,7 +10,5 @@ Iter=1
 
 WasmDir=
 
-RunAOT=true
-
 # Do not check result due to differences
 CheckResult=true
