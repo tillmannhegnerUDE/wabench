@@ -24,8 +24,6 @@
 #include <memory>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <limits>
 #include <sys/time.h>
 
 // Compile with: xcrun clang++ -o HashSet HashSet.cpp -O2 -W -framework Foundation -licucore -std=c++11 -fvisibility=hidden -DNDEBUG=1
@@ -44,7 +42,7 @@
         }                                                               \
     } while(0)
 
-#define ASSERT_DISABLED 1
+#define ASSERT_ENABLED 0
 
 #define DUMP_HASHTABLE_STATS 0
 #define DUMP_HASHTABLE_STATS_PER_TABLE 0
@@ -78,8 +76,7 @@ template<typename ToType, typename FromType>
 inline ToType bitwise_cast(FromType from)
 {
     typename std::remove_const<ToType>::type to { };
-    //std::memcpy(&to, &from, sizeof(to));
-    memcpy(&to, &from, sizeof(to));
+    std::memcpy(&to, &from, sizeof(to));
     return to;
 }
 
@@ -1036,7 +1033,7 @@ struct CustomHashTraits : public GenericHashTraits<T> {
         template<typename HashTranslator, typename T> ValueType* lookup(const T&);
         template<typename HashTranslator, typename T> ValueType* inlineLookup(const T&);
 
-#if !ASSERT_DISABLED
+#if ASSERT_ENABLED
         void checkTableConsistency() const;
 #else
         static void checkTableConsistency() { }
@@ -1088,7 +1085,7 @@ struct CustomHashTraits : public GenericHashTraits<T> {
         iterator makeKnownGoodIterator(ValueType* pos) { return iterator(this, pos, m_table + m_tableSize, HashItemKnownGood); }
         const_iterator makeKnownGoodConstIterator(ValueType* pos) const { return const_iterator(this, pos, m_table + m_tableSize, HashItemKnownGood); }
 
-#if !ASSERT_DISABLED
+#if ASSERT_ENABLED
         void checkTableConsistencyExceptSize() const;
 #else
         static void checkTableConsistencyExceptSize() { }
@@ -1185,7 +1182,7 @@ struct CustomHashTraits : public GenericHashTraits<T> {
         return key;
     }
 
-#if ASSERT_DISABLED
+#if !ASSERT_ENABLED
 
     template<typename Key, typename Value, typename Extractor, typename HashFunctions, typename Traits, typename KeyTraits>
     template<typename HashTranslator, typename T>
@@ -1202,7 +1199,7 @@ struct CustomHashTraits : public GenericHashTraits<T> {
         if (!HashFunctions::safeToCompareToEmptyOrDeleted)
             return;
         ASSERT(!HashTranslator::equal(KeyTraits::emptyValue(), key));
-        typename std::aligned_storage<sizeof(ValueType), std::alignment_of<ValueType>::value>::type deletedValueBuffer;
+        alignas(ValueType) std::byte deletedValueBuffer[sizeof(ValueType)];
         ValueType* deletedValuePtr = reinterpret_cast_ptr<ValueType*>(&deletedValueBuffer);
         ValueType& deletedValue = *deletedValuePtr;
         Traits::constructDeletedValue(deletedValue);
@@ -1954,7 +1951,7 @@ struct CustomHashTraits : public GenericHashTraits<T> {
         return *this;
     }
 
-#if !ASSERT_DISABLED
+#if ASSERT_ENABLED
 
     template<typename Key, typename Value, typename Extractor, typename HashFunctions, typename Traits, typename KeyTraits>
     void HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits>::checkTableConsistency() const
@@ -1996,7 +1993,7 @@ struct CustomHashTraits : public GenericHashTraits<T> {
         ASSERT(m_tableSize == m_tableSizeMask + 1);
     }
 
-#endif // ASSERT_DISABLED
+#endif // ASSERT_ENABLED
 
 #if CHECK_HASHTABLE_ITERATORS
 
@@ -13476,8 +13473,8 @@ void benchmark()
 
 int main(int, char**)
 {
-    double before = currentTime();    
-    for (unsigned i = 0; i < 1000; ++i)
+    double before = currentTime();
+    for (unsigned i = 0; i < 100; ++i)
         benchmark();
     double after = currentTime();
     printf("That took %lf seconds.\n", after - before);

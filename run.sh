@@ -261,7 +261,7 @@ done
 if [ $ReturnValue == 1 ]
 then
   echo "$Message" > error-report.txt
-  sleep 300
+#  sleep 300
 fi
 
 

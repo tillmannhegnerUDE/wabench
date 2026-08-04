@@ -22,8 +22,6 @@ RUSTC = /root/.cargo/bin/rustc
 
 OPT=-O${OPTLEVEL}
 
-$(info The opt level is: ${OPTLEVEL} and its variable is ${OPT})
-
 WASMCC = /opt/wasi-sdk-33.0-x86_64-linux/bin/${CLANG} \
          --sysroot /opt/wasi-sdk-33.0-x86_64-linux/share/wasi-sysroot
 
