@@ -174,7 +174,7 @@ for file in $(find . -mindepth 2 -type f -name "run.sh"); do
       then
         Message=$(make OPTLEVEL=$OptLevel 2>&1)
       else
-        Message=$(cargo build && cargo rustc --target wasm32-wasip1 2>&1)
+        Message=$(cargo build --release && cargo rustc --target wasm32-wasip1 --release && mv target/release/$Native . &&  mv target/wasm32-wasip1/release/$Native.wasm . 2>&1)
       fi
     else
       echo "The binaries seem to already exits"
