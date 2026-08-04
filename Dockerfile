@@ -93,9 +93,6 @@ RUN wget https://github.com/nasa/spacewasm/archive/refs/tags/v0.4.5.tar.gz && \
 ENV PATH="$PATH:/home/binaryen-version_131/bin"
 #RUN apt-get install -y linux-tools-generic linux-tools-6.12.76-linuxkit linux-cloud-tools-6.12.76-linuxkit
 
-#ENV CPATH=/usr/include
-#ENV LIBRARY_PATH=/usr/include
-
 #import code
 WORKDIR /home/
 RUN mkdir wabench

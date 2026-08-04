@@ -12,8 +12,6 @@ SmokeTest=false
 
 DryRun=false
 
-SkipCleaning=false
-
 OptLevel=2
 
 RuntimeFolder="RuntimeConfigs"
@@ -26,9 +24,6 @@ while getopts "Aachnmpo:st" opt; do
             ;;
         a)
             RunAOT=true
-            ;;
-        c)
-            SkipCleaning=true
             ;;
         h)
             showUsage=true
@@ -75,7 +70,6 @@ then
   echo "Options:"
   echo "  -a run with AOT compilation for all runtimes that support it"
   echo "  -A only run the runtimes that support AOT with it"
-  echo "  -c skip cleaning up after execution. Output files and binaries persist inside the container."
   echo "  -h show this help message"
   echo "  -n perform a dry run"
   echo "  -m measure the peak memory consumption"
@@ -91,7 +85,7 @@ then
   echo "invalid optimiziation level: $OptLevel (allowed values: 0, 1, 2, 3)"
 fi
 
-#echo "aotExlusive=$RunAOTExclusively aot=$RunAOT, Mem=$MeasureMem, Perf=$MeasurePerf, DryRun=$DryRun, SkipCleaning=$SkipCleaning, SmokeTest=$SmokeTest, OptLevel=$OptLevel"
+#echo "aotExlusive=$RunAOTExclusively aot=$RunAOT, Mem=$MeasureMem, Perf=$MeasurePerf, DryRun=$DryRun, SmokeTest=$SmokeTest, OptLevel=$OptLevel"
 #
 #exit 0
 
@@ -230,11 +224,6 @@ for file in $(find . -mindepth 2 -type f -name "run.sh"); do
       fi
       echo "Running..."
       . $CommonScript
-      if [ "$SkipCleaning" == "false" ]
-      then
-        echo "Cleanup..."
-        make clean > /dev/null 2>&1
-      fi
       cd "$BenchRoot"
       if [ "$MeasurePerf" == "true" ]
       then
@@ -246,11 +235,6 @@ for file in $(find . -mindepth 2 -type f -name "run.sh"); do
         echo "$TimeTableLine">>$TimesTable
       fi
     else
-      if [ "$SkipCleaning" == "false" ]
-      then
-        echo "Cleanup..."
-        make clean > /dev/null 2>&1
-      fi
       cd "$BenchRoot"
     fi
 
