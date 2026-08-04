@@ -160,7 +160,7 @@ runBenchmarksForProgram() {
   echo "[${nth}/${ProgramCount}] $1"
 }
 
-for file in $(find . -mindepth 2 -type f -name "run.sh"); do
+for file in $(find ./Programming-Language-Benchmarks-main -mindepth 2 -type f -name "run.sh"); do
     nth=$((nth+1))
     echo "[${nth}/${ProgramCount}] $(dirname "$file")"
     echo "$(basename $(dirname $file))"
@@ -245,7 +245,7 @@ done
 if [ $ReturnValue == 1 ]
 then
   echo "$Message" > error-report.txt
-#  sleep 300
+  sleep 300
 fi
 
 

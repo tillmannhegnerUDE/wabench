@@ -1,0 +1,36 @@
+lang: rust
+problems:
+  - name: helloworld
+    source:
+      - 1.rs
+  - name: mandelbrot
+    source:
+      - 9.rs
+  - name: nbody
+    source:
+      - 3.rs
+  - name: spectral-norm
+    source:
+      - 8.rs
+      - 8-m.rs
+source_rename_to: main.rs
+compiler_version_command: rustc -V
+compiler_version_regex:
+runtime_version_parameter:
+runtime_version_regex:
+environments:
+  - os: linux
+    compiler: rustc
+    version: nightly
+    env:
+      RUSTFLAGS: -Ctarget-cpu=broadwell
+      CC: clang
+      CXX: clang++
+    include: rust-nightly
+    include_sub_dir: src
+    build: cargo build --release --target-dir /tmp/rsn/target
+    after_build:
+      - sudo mv /tmp/rsn/target/release/_app out
+    out_dir: out
+    run_cmd: _app
+    allow_failure: true
