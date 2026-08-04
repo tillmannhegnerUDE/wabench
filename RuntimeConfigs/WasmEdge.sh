@@ -8,7 +8,7 @@ fi
 WasmEdgeNativeArg="-- $NativeArg"
 
 
-AOTCompilation="$WasmEdge compile $Wasm $WasmAOT"
+AOTCompilation="$WasmEdge compile --optimize $OptLevel $Wasm $WasmAOT"
 
 AOTRunCommand="$WasmEdge run$WasmEdgeDir $WasmAOT $WasmEdgeNativeArg"
 

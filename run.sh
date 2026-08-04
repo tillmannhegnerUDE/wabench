@@ -12,9 +12,11 @@ DryRun=false
 
 SkipCleaning=false
 
+OptLevel=2
+
 RuntimeFolder="RuntimeConfigs"
 
-while getopts "achnmpst" opt; do
+while getopts "achnmpo:st" opt; do
     case $opt in
         a)
             RunAOT=true
@@ -33,6 +35,9 @@ while getopts "achnmpst" opt; do
             ;;
         p)
             MeasurePerf=true
+            ;;
+        o)
+            OptLevel=$OPTARG
             ;;
         s)
             SmokeTest=true
@@ -67,14 +72,20 @@ then
   echo "  -h show this help message"
   echo "  -n perform a dry run"
   echo "  -m measure the peak memory consumption"
+  echo "  -o <level> set the compiler optimiziation level for each compiler in the benchmark (allowed values: 0, 1, 2, 3; the default value is 2)"
   echo "  -p measure performance metrics like number of instructions, number of cache misses and number of branch prediction errors"
   echo "  -s perform a smoke test"
   echo ""
   exit 0
 fi
 
-#echo "aot=$RunAOT, Mem=$MeasureMem, Perf=$MeasurePerf, DryRun=$DryRun, SkipCleaning=$SkipCleaning, SmokeTest=$SmokeTest"
+if [ "$OptLevel" != "0" ] && [ "$OptLevel" != "1" ] && [ "$OptLevel" != "2" ] && [ "$OptLevel" != "3" ]
+then
+  echo "invalid optimiziation level: $OptLevel (allowed values: 0, 1, 2, 3)"
+fi
 
+echo "aot=$RunAOT, Mem=$MeasureMem, Perf=$MeasurePerf, DryRun=$DryRun, SkipCleaning=$SkipCleaning, SmokeTest=$SmokeTest, OptLevel=$OptLevel"
+#
 #exit 0
 
 BenchRoot="/home/wabench"
@@ -160,7 +171,7 @@ for file in $(find . -mindepth 2 -type f -name "run.sh"); do
       echo "Building binaries..."
       if [ ! -f "Cargo.toml" ]
       then
-        Message=$(make 2>&1)
+        Message=$(make OPTLEVEL=$OptLevel 2>&1)
       else
         Message=$(cargo build && cargo rustc --target wasm32-wasip1 2>&1)
       fi

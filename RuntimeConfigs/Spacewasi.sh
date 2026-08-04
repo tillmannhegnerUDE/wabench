@@ -6,7 +6,16 @@ then
   SpaceDir=" --dir $WasmDir"
 fi
 
-$MVPconverter $Wasm mvp.wasm
+wasm-opt \
+    --llvm-memory-copy-fill-lowering \
+    --signext-lowering \
+    --disable-bulk-memory \
+    --llvm-nontrapping-fptoint-lowering \
+    --disable-multivalue \
+    --disable-simd \
+    -O$OptLevel \
+    $Wasm \
+    -o mvp.wasm
 
 RunCommand="$SPACEWASI$SpaceDir mvp.wasm $NativeArg"
 

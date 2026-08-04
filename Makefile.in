@@ -20,7 +20,9 @@ endif
 CC = /usr/bin/${CLANG}
 RUSTC = /root/.cargo/bin/rustc
 
-OPT=-O2
+OPT=-O${OPTLEVEL}
+
+$(info The opt level is: ${OPTLEVEL} and its variable is ${OPT})
 
 WASMCC = /opt/wasi-sdk-33.0-x86_64-linux/bin/${CLANG} \
          --sysroot /opt/wasi-sdk-33.0-x86_64-linux/share/wasi-sysroot
@@ -34,9 +36,9 @@ ${Native}: ${OBJ} ${RS}
 	@if [ -n "${OBJ}" ]; then \
 		${CC} ${CFLAGS} ${OPT} ${OBJ} ${LDFLAGS} -v -o $@; \
 	elif [ -n "${RS}" ]; then \
-		${RUSTC} -C opt-level=2 -C overflow_checks=yes ${RS} -o $@; \
+		${RUSTC} -C opt-level=${OPTLEVEL} -C overflow_checks=yes ${RS} -o $@; \
 	else \
-		@echo "Error: No source files to compile to native executable"; \
+		echo "Error: No source files to compile to native executable"; \
 		exit 1; \
 	fi
 
@@ -44,7 +46,7 @@ ${WASM}: ${SRC}
 	@if [ -n "${OBJ}" ]; then \
 		${WASMCC} ${CFLAGS} ${WASMFLAGS} ${OPT} ${CINCLUDE} $^ -o $@; \
 	elif [ -n "${RS}" ]; then \
-		${RUSTC} --target wasm32-wasip1 $^ -o $@; \
+		${RUSTC} -C opt-level=${OPTLEVEL} -C overflow_checks=yes --target wasm32-wasip1 $^ -o $@; \
 	else \
 		@echo "Error: No source files to compile to wasm module"; \
 		exit 1; \

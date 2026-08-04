@@ -29,9 +29,11 @@ Some options are offered to run with different configurations:
 -h show this help message
 -n perform a dry run
 -m measure the peak memory consumption
--p measure performance metrics like number of instructions, number of cache misses and number of branch prediction errors 
-    (Since the perf-tool doing these messurements needs additional permissions, the flags 
-    '--cap-add=SYS_ADMIN --privileged -it' have to be added to the 'run' command)  
+-o <level> set the compiler optimiziation level for each compiler in the benchmark (allowed values: 0, 1, 2, 3; the 
+   default value is 2)
+-p measure performance metrics like number of instructions, number of cache misses and number of branch prediction 
+   errors (Since the perf-tool doing these messurements needs additional permissions, the flags 
+   '--cap-add=SYS_ADMIN --privileged -it' have to be added to the 'run' command)  
 -s perform a smoke test
 ```
 

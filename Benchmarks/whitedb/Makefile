@@ -5,7 +5,7 @@ SRCSUFFIX = c
 
 CFLAGS = -std=gnu90
 CINCLUDE =
-OPT = -O2
+
 LDFLAGS = -lm
 #WASMFLAGS = -D'getuid()=0'
 
