@@ -15,7 +15,15 @@ runaot() { # $1: Command that will be executed $2 flag of the run-script
     timeRes=$(/usr/bin/time -p /bin/bash -c "$cmd" 2>&1 | awk '/user/ {print $2}')
     # depending on the result wanted, I can either choose the time in "real", from the "user" or from the "system"
     echo -e "AOT compilation time of $RuntimeName: \t$timeRes seconds"
-    TimeTableLine="$TimeTableLine;$timeRes"
+    if [ "$MeasureMem" != "true" ] && [ "$MeasurePerf" != "true" ]
+    then
+      if [ "$cmd" == "" ]
+      then
+        TimeTableLine="$TimeTableLine;Null"
+      else
+        TimeTableLine="$TimeTableLine;$timeRes"
+      fi
+    fi
 }
 
 runtest() { # $1: command that will be executed (for native and wasm programs) $2: path to the output file $3: indicated which runtime the test is run with or if it is run natively $4: if this is "-n", a dry run is started first. The argument "-n" has to be given to the call of run.sh
@@ -28,7 +36,7 @@ runtest() { # $1: command that will be executed (for native and wasm programs) $
         echo ""
         return 0
     fi
-    if [ "$MeasureMem" = "true" ]
+    if [ "$MeasureMem" == "true" ]
     then
         #version for ubuntu:
         # sh -c "/usr/bin/time -v $cmd"
@@ -37,7 +45,7 @@ runtest() { # $1: command that will be executed (for native and wasm programs) $
 #        mem=$(cat "$OutputFile" | grep "Maximum resident set size (kbytes): " | sed 's/Maximum resident set size (kbytes): //' | xargs)
         echo -e "$RuntimeName:   \t$mem kbytes"
         MemoryTableLine="$MemoryTableLine;$mem"
-    elif [ "$MeasurePerf" = "true" ]
+    elif [ "$MeasurePerf" == "true" ]
     then
 : '
         sh -c "perf stat $cmd"
@@ -122,10 +130,21 @@ for runtime in $BenchRoot/$RuntimeFolder/*.sh; do
   then
     runaot "$AOTCompilation"
     runtest "$AOTRunCommand"
-  else
+  elif [ "$RunAOTExclusively" == "false" ]
+  then
     runtest "$RunCommand"
+  else
+    if [ "$MeasureMem" = "true" ]
+    then
+      MemoryTableLine="$MemoryTableLine;Null"
+    elif [ "$MeasurePerf" = "true" ]
+    then
+      PerformanceTableLine="$PerformanceTableLine;Null;Null;Null;Null;Null;Null"
+    else
+      TimeTableLine="$TimeTableLine;Null"
+    fi
   fi
-  done
+done
 
 if [ "$1" == "-n" ] # No need to compare results for a dry run
 then

@@ -2,6 +2,8 @@
 
 RunAOT=false
 
+RunAOTExclusively=false
+
 MeasureMem=false
 
 MeasurePerf=false
@@ -16,8 +18,12 @@ OptLevel=2
 
 RuntimeFolder="RuntimeConfigs"
 
-while getopts "achnmpo:st" opt; do
+while getopts "Aachnmpo:st" opt; do
     case $opt in
+        A)
+            RunAOTExclusively=true
+            RunAOT=true
+            ;;
         a)
             RunAOT=true
             ;;
@@ -68,7 +74,8 @@ then
   echo "This is a Benchmarking tool for WASM runtimes"
   echo "Options:"
   echo "  -a run with AOT compilation for all runtimes that support it"
-  echo "  -c skip cleaning up after execution. Output files and binaries persist."
+  echo "  -A only run the runtimes that support AOT with it"
+  echo "  -c skip cleaning up after execution. Output files and binaries persist inside the container."
   echo "  -h show this help message"
   echo "  -n perform a dry run"
   echo "  -m measure the peak memory consumption"
@@ -84,7 +91,7 @@ then
   echo "invalid optimiziation level: $OptLevel (allowed values: 0, 1, 2, 3)"
 fi
 
-echo "aot=$RunAOT, Mem=$MeasureMem, Perf=$MeasurePerf, DryRun=$DryRun, SkipCleaning=$SkipCleaning, SmokeTest=$SmokeTest, OptLevel=$OptLevel"
+#echo "aotExlusive=$RunAOTExclusively aot=$RunAOT, Mem=$MeasureMem, Perf=$MeasurePerf, DryRun=$DryRun, SkipCleaning=$SkipCleaning, SmokeTest=$SmokeTest, OptLevel=$OptLevel"
 #
 #exit 0
 

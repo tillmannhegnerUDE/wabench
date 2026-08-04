@@ -25,7 +25,8 @@ $ docker run wabench <options>
 Some options are offered to run with different configurations:
 ```
 -a run with AOT compilation for all runtimes that support it
--c skip cleaning up after execution. Output files and binaries persist.
+-A only run the runtimes that support AOT with it
+-c skip cleaning up after execution. Output files and binaries persist inside the container.
 -h show this help message
 -n perform a dry run
 -m measure the peak memory consumption
