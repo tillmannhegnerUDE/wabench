@@ -1,0 +1,15 @@
+[package]
+name = "secp256k1-Rust-1"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ibig = "0.3.6"
+lazy_static = "1.5.0"
+num-traits = "0.2.19"
+
+[[bin]]
+name = "secp256k1"
+test = false
+bench = false
+path = "src/1.rs"

@@ -1,0 +1,18 @@
+[package]
+name = "coro-prime-sieve-Rust-4"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.104"
+async-channel = "2.5.0"
+async-executor = "1.14.0"
+futures-lite = "2.6.1"
+
+
+
+[[bin]]
+name = "coro-prime-sieve"
+test = false
+bench = false
+path = "src/4.rs"

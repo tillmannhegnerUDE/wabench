@@ -1,0 +1,14 @@
+[package]
+name = "binarytrees"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+static-rc = "0.2"
+
+
+[[bin]]
+name = "binarytrees"
+test = false
+bench = false
+path = "src/4.rs"

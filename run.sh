@@ -59,7 +59,7 @@ then
   exit 1
 fi
 
-ProgramCount=$(find . -mindepth 2 -name "run.sh" | wc -l | tr -d ' \t')
+ProgramCount=$(find ./Programming-Language-Benchmarks-main -mindepth 2 -name "run.sh" | wc -l | tr -d ' \t')
 RuntimeCount=$(find $RuntimeFolder -maxdepth 1 -name "*.sh" | wc -l | tr -d ' \t')
 
 echo "$RuntimeCount runtimes and $ProgramCount programs where found."
@@ -71,7 +71,7 @@ then
   echo "  -a run with AOT compilation for all runtimes that support it"
   echo "  -A only run the runtimes that support AOT with it"
   echo "  -h show this help message"
-  echo "  -n perform a dry run"
+  echo "  -n perform a dry run: All programs get compiled but the runtimes do not run"
   echo "  -m measure the peak memory consumption"
   echo "  -o <level> set the compiler optimiziation level for each compiler in the benchmark (allowed values: 0, 1, 2, 3; the default value is 2)"
   echo "  -p measure performance metrics like number of instructions, number of cache misses and number of branch prediction errors"
@@ -174,7 +174,13 @@ for file in $(find ./Programming-Language-Benchmarks-main -mindepth 2 -type f -n
       then
         Message=$(make OPTLEVEL=$OptLevel 2>&1)
       else
-        Message=$(cargo build --release && cargo rustc --target wasm32-wasip1 --release && mv target/release/$Native . &&  mv target/wasm32-wasip1/release/$Native.wasm . 2>&1)
+        Message=$(
+          {
+            cargo build --release &&
+            cargo rustc --target wasm32-wasip1 --release &&
+            mv target/release/$Native . &&
+            mv target/wasm32-wasip1/release/$Native.wasm .
+          } 2>&1)
       fi
     else
       echo "The binaries seem to already exits"
@@ -196,7 +202,7 @@ for file in $(find ./Programming-Language-Benchmarks-main -mindepth 2 -type f -n
         fi
         ReturnValue=1
         cd "$BenchRoot"
-        continue
+        break
       fi
     fi
 
@@ -244,10 +250,8 @@ done
 
 if [ $ReturnValue == 1 ]
 then
-  echo "$Message" > error-report.txt
-  sleep 300
+  echo "$Message"
+#  sleep 300
 fi
 
-
-echo "Return value: $ReturnValue"
 exit $ReturnValue

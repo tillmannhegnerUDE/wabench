@@ -151,7 +151,7 @@ then
     return 0
 fi
 
-if [ "$CheckResult" = "true" ]
+if [ "$CheckResult" == "true" ] && [ "$DryRun" == "false" ]
 then
     echo "check results ..."
     for runtime in $BenchRoot/$RuntimeFolder/*.sh; do

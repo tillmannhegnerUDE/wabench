@@ -1,0 +1,14 @@
+[package]
+name = "mandelbrot-Rust-9"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bitvec = "1.1.1"
+md5 = "0.8.1"
+
+[[bin]]
+name = "mandelbrot"
+test = false
+bench = false
+path = "src/9.rs"

@@ -1,0 +1,14 @@
+[package]
+name = "coro-prime-sieve-Rust-1"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.104"
+async-std = { version = "1.13.2", default-features = false, features = ["attributes", "std", "unstable"] }
+
+[[bin]]
+name = "coro-prime-sieve"
+test = false
+bench = false
+path = "src/1.rs"

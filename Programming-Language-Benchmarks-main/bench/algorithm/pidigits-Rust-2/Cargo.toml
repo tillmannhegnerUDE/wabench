@@ -1,0 +1,14 @@
+[package]
+name = "pidigits-Rust-2"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.104"
+ibig = "0.3.6"
+
+[[bin]]
+name = "pidigits"
+test = false
+bench = false
+path = "src/2.rs"

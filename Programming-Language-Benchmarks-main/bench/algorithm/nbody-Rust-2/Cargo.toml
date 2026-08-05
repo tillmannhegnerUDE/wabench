@@ -1,0 +1,15 @@
+[package]
+name = "nbody-Rust-2"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+generic-array = "1.4.4"
+lazy_static = "1.5.0"
+numeric-array = "0.6.1"
+
+[[bin]]
+name = "nbody"
+test = false
+bench = false
+path = "src/2.rs"

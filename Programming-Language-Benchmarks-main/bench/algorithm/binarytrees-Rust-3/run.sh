@@ -6,7 +6,7 @@ Native=./binarytrees
 
 NativeArg=
 
-Iter=1
+Iter=5
 
 WasmDir=
 

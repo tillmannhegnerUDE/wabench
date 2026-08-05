@@ -1,0 +1,15 @@
+[package]
+name = "mandelbrot-Rust-8"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+generic-array = "1.4.4"
+md5 = "0.8.1"
+numeric-array = "0.6.1"
+
+[[bin]]
+name = "mandelbrot"
+test = false
+bench = false
+path = "src/8.rs"

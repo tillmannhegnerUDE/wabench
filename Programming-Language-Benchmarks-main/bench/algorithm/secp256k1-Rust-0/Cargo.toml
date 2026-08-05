@@ -1,0 +1,15 @@
+[package]
+name = "secp256k1-Rust-0"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+elliptic-curve = { version = "0.13.8", default-features = false, features = ["alloc", "sec1", "arithmetic"] }
+k256 = { version = "0.13.1", default-features = false, features = ["arithmetic", "alloc"] }
+
+
+[[bin]]
+name = "secp256k1"
+test = false
+bench = false
+path = "src/0.rs"

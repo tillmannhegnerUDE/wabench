@@ -1,0 +1,13 @@
+[package]
+name = "knucleotide-Rust-8"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+hashbrown = "0.17.1"
+
+[[bin]]
+name = "knucleotide"
+test = false
+bench = false
+path = "src/8.rs"

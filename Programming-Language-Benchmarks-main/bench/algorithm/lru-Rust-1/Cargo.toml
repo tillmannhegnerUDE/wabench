@@ -1,0 +1,13 @@
+[package]
+name = "lru-Rust-1"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+hashbrown = "0.17.1"
+
+[[bin]]
+name = "lru"
+test = false
+bench = false
+path = "src/1.rs"

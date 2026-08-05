@@ -34,7 +34,7 @@ ${Native}: ${OBJ} ${RS}
 	@if [ -n "${OBJ}" ]; then \
 		${CC} ${CFLAGS} ${OPT} ${OBJ} ${LDFLAGS} -v -o $@; \
 	elif [ -n "${RS}" ]; then \
-		${RUSTC} -C opt-level=${OPTLEVEL} -C overflow_checks=yes ${RS} -o $@; \
+		${RUSTC} ${RFLAGS} -C opt-level=${OPTLEVEL} -C overflow_checks=yes ${RS} -o $@; \
 	else \
 		echo "Error: No source files to compile to native executable"; \
 		exit 1; \
@@ -44,7 +44,7 @@ ${WASM}: ${SRC}
 	@if [ -n "${OBJ}" ]; then \
 		${WASMCC} ${CFLAGS} ${WASMFLAGS} ${OPT} ${CINCLUDE} $^ -o $@; \
 	elif [ -n "${RS}" ]; then \
-		${RUSTC} -C opt-level=${OPTLEVEL} -C overflow_checks=yes --target wasm32-wasip1 $^ -o $@; \
+		${RUSTC} ${RFLAGS} -C opt-level=${OPTLEVEL} -C overflow_checks=yes --target wasm32-wasip1 $^ -o $@; \
 	else \
 		@echo "Error: No source files to compile to wasm module"; \
 		exit 1; \
