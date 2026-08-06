@@ -26,9 +26,8 @@ runaot() { # $1: Command that will be executed $2 flag of the run-script
     fi
 }
 
-runtest() { # $1: command that will be executed (for native and wasm programs) $2: path to the output file $3: indicated which runtime the test is run with or if it is run natively $4: if this is "-n", a dry run is started first. The argument "-n" has to be given to the call of run.sh
-    OutputFile="output_$RuntimeName" # this value was formally in the variable $2
-    #the value formally in $3 is now in RuntimeName
+runtest() { # $1: command that will be executed (for native and wasm programs)
+    OutputFile="output_$RuntimeName"
     cmd="$1 &>$OutputFile"
     if [ "$DryRun" == "true" ] # dry run
     then
@@ -39,25 +38,12 @@ runtest() { # $1: command that will be executed (for native and wasm programs) $
     if [ "$MeasureMem" == "true" ]
     then
         #version for ubuntu:
-        # sh -c "/usr/bin/time -v $cmd"
-        # mem=$( cat "$2" | grep "Maximum resident set size (kbytes)" | sed 's/.*: //' )
         mem=$(/usr/bin/time -v -p /bin/bash -c "$cmd" 2>&1 | grep "Maximum resident set size" | awk '{print $6}')
-#        mem=$(cat "$OutputFile" | grep "Maximum resident set size (kbytes): " | sed 's/Maximum resident set size (kbytes): //' | xargs)
         echo -e "$RuntimeName:   \t$mem kbytes"
         MemoryTableLine="$MemoryTableLine;$mem"
     elif [ "$MeasurePerf" == "true" ]
     then
-: '
-        sh -c "perf stat $cmd"
-        cycles=$( cat "$2" | grep "cycles" | sed 's/      cycles.*//' | sed 's/        //' )
-        insns=$( cat "$2" | grep "instructions" | sed 's/      instructions.*//' | sed 's/        //')
-        branches=$( cat "$2" | grep "branches" | grep -v "branch-misses" | sed 's/      branches.*//' | sed 's/        //')
-        brmisses=$( cat "$2" | grep "branch-misses" | sed 's/      branch-misses.*//' | sed 's/        //')
-        echo -e "$3:   \t$cycles cycles"
-        echo -e "$3:   \t$insns instructions"
-        echo -e "$3:   \t$branches branches"
-        echo -e "$3:   \t$brmisses branch-misses"
-'
+
         #version for ubuntu:
         # tmp_out=$(perf stat -e cache-misses,cache-references $cmd 2>&1)
         echo "$(sh -c "perf stat -e cache-misses,cache-references,cycles,instructions,branches,branch-misses $cmd" 2>&1)" > tmp_out
@@ -67,8 +53,6 @@ runtest() { # $1: command that will be executed (for native and wasm programs) $
         instructions=$( cat tmp_out | grep "instructions" | awk '{print $1}' | tr -d '\n' )
         branches=$( cat tmp_out | grep "branches" | awk '{print $1}' | tr -d '\n' )
         branchmisses=$( cat tmp_out | grep "branch-misses" | awk '{print $1}' | tr -d '\n' )
-#        sh -c "xctrace record --template 'CPU Counters' --output $2.trace --launch -- $cmd"
-#        cat "$OutputFile"
         PerformanceTableLine="$PerformanceTableLine;$cachemisses"
         PerformanceTableLine="$PerformanceTableLine;$cacherefs"
         PerformanceTableLine="$PerformanceTableLine;$cycles"
@@ -157,11 +141,6 @@ then
     for runtime in $BenchRoot/$RuntimeFolder/*.sh; do
       diff output_native "output_$(basename -s .sh $runtime)"
     done
-#    diff output_native output_wasmtime
-#    diff output_native output_wavm
-#    diff output_native output_wasmer
-#    diff output_native output_wasm3
-#    diff output_native output_wamr
 else
   echo "The results might differ for this program."
 fi

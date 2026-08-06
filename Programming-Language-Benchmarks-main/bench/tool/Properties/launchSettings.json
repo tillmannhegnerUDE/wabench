@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "BenchTool": {
-      "commandName": "Project",
-      "commandLineArgs": "--config ./../../../../bench.yaml --algorithm ./../../../../algorithm --include ./../../../../include --build-output ./../../../../build"
-    }
-  }
-}

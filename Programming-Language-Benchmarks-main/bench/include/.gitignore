@@ -1,7 +1,0 @@
-*/*
-!.gitignore
-
-!*.csproj
-!kotlin-jvm/*
-!kotlin-native/*
-!nim.nimble

@@ -34,7 +34,7 @@ Some options are offered to run with different configurations:
 -p measure performance metrics like number of instructions, number of cache misses and number of branch prediction 
    errors (Since the perf-tool doing these messurements needs additional permissions, the flags 
    '--cap-add=SYS_ADMIN --privileged -it' have to be added to the 'run' command)  
--s perform a smoke test
+-t only run with one runtime (WAVM by default). This can be used to run Tests that are meant to conclude faster.
 ```
 
 Time metrics are meassured if neither memory nor performance is meassured.
