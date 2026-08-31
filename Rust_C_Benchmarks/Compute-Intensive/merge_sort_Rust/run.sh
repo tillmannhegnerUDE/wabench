@@ -4,7 +4,7 @@ Language=Rust
 
 Native=./merge_sort
 
-NativeArg="< ../../input"
+NativeArg="< ../../input_original"
 
 Iter=1
 

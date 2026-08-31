@@ -6,7 +6,7 @@ Native=./helloworld
 
 NativeArg=
 
-Iter=5
+Iter=20
 
 WasmDir=
 

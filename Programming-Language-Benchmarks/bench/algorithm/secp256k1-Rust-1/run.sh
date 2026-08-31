@@ -6,7 +6,7 @@ Native=./secp256k1
 
 NativeArg=
 
-Iter=5
+Iter=10
 
 WasmDir=
 

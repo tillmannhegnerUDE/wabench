@@ -6,7 +6,7 @@ Native=./djpeg
 
 NativeArg="-dct int -ppm -outfile output_large_decode.ppm input_large.jpg"
 
-Iter=1
+Iter=5
 
 WasmDir=.
 

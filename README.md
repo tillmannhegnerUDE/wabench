@@ -16,8 +16,9 @@ If you see any license/copyright issues, please let us know. We will remove the 
 
 ## Execution
 
-Using the Dockerfile, this benchmark can run inside a container.
-Using Docker, the image can be built and run with these commands:
+The Benchmark runs inside a docker container. 
+The configuration for this container is defined in "Dockerfile".
+Using Docker, the image can be built and run with these commands (docker has to be installed for this):
 ```commandline
 $ docker build --platform linux/amd64 -t wabench <path to Dockerfile>
 $ docker run wabench <options>

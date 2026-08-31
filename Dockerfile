@@ -8,7 +8,6 @@ RUN apt-get update && apt-get install -y \
     wget \
     xz-utils \
     libc6-dev \
-    clang \
     make \
     build-essential \
     linux-libc-dev \

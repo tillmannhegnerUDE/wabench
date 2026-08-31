@@ -6,7 +6,7 @@ Native=./lru
 
 NativeArg=
 
-Iter=5
+Iter=10
 
 WasmDir=
 

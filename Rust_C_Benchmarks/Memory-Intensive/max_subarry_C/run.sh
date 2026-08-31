@@ -4,7 +4,7 @@ Language=C
 
 Native=./max_subarry
 
-NativeArg="< ../../input"
+NativeArg="< ../../input_original"
 
 Iter=1
 

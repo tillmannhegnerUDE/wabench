@@ -4,7 +4,7 @@ Language=Rust
 
 Native=./quick_sort
 
-NativeArg="< ../../input"
+NativeArg="< ../../input_long"
 
 Iter=1
 
