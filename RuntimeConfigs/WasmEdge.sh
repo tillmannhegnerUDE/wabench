@@ -5,7 +5,7 @@ then
   WasmEdgeDir=" --dir $WasmDir"
 fi
 
-WasmEdgeNativeArg="-- $NativeArg"
+WasmEdgeNativeArg=" $NativeArg"
 
 
 AOTCompilation="$WasmEdge compile --optimize $OptLevel $Wasm $WasmAOT"

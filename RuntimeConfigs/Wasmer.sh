@@ -2,7 +2,7 @@ Wasmer="/root/.wasmer/bin/wasmer"
 
 if [ ! -z "$WasmDir" ]
 then
-  WasmerDir=" --volume $WasmDir"
+  WasmerDir=" --dir $WasmDir"
 fi
 
 WasmerNativeArg="-- $NativeArg"
