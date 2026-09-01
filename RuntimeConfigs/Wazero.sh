@@ -2,7 +2,7 @@ Wazero="/home/wazero/wazero"
 
 if [ ! -z "$WasmDir" ]
 then
-  WazeroDir=" --cachedir $WasmDir"
+  WazeroDir=" -mount $WasmDir"
 fi
 
 WazeroNativeArg="$NativeArg"
