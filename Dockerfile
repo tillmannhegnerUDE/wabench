@@ -68,7 +68,7 @@ RUN wget https://github.com/bytecodealliance/wasmtime/releases/download/dev/wasm
     tar -xf wasmtime-dev-x86_64-linux.tar.xz
 RUN wget https://github.com/WAVM/WAVM/releases/download/nightly%2F2026-04-05/wavm-nightly-2026-04-05-linux-x64.tar.gz && \
     tar -xzf wavm-nightly-2026-04-05-linux-x64.tar.gz
-RUN curl https://get.wasmer.io -sSfL | sh -s "v6.1.0"
+RUN curl https://get.wasmer.io -sSfL | sh -s "v7.4.0"
 RUN wget https://github.com/bytecodealliance/wasm-micro-runtime/archive/refs/tags/WAMR-2.4.5.tar.gz && \
     tar -xzf WAMR-2.4.5.tar.gz
 WORKDIR /home/wasm-micro-runtime-WAMR-2.4.5/product-mini/platforms/linux/
