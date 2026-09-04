@@ -6,7 +6,7 @@ Native=./mandelbrot
 
 NativeArg=
 
-Iter=10
+Iter=20
 
 WasmDir=
 
