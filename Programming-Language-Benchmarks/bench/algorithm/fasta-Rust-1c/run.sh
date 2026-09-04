@@ -6,7 +6,7 @@ Native=./fasta
 
 NativeArg=
 
-Iter=20
+Iter=100
 
 WasmDir=
 

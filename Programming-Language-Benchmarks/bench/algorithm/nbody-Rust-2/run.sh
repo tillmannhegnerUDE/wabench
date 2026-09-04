@@ -6,7 +6,7 @@ Native=./nbody
 
 NativeArg=
 
-Iter=20
+Iter=50
 
 WasmDir=
 

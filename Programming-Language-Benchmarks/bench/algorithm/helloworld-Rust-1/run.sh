@@ -6,7 +6,7 @@ Native=./helloworld
 
 NativeArg=
 
-Iter=50
+Iter=100
 
 WasmDir=
 
