@@ -6,7 +6,7 @@ Native=./spectral_norm
 
 NativeArg=
 
-Iter=10
+Iter=20
 
 WasmDir=
 
