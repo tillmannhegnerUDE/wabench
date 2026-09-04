@@ -5,7 +5,7 @@ then
   WasmerDir=" --volume $WasmDir:/"
 fi
 
-WasmerNativeArg="$NativeArg"
+WasmerNativeArg="-- $NativeArg"
 
 
 AOTCompilation="$Wasmer compile $Wasm -o $WasmAOT"
