@@ -6,7 +6,7 @@ Native=./knucleotide
 
 NativeArg=in.zip
 
-Iter=10
+Iter=20
 
 WasmDir=.
 

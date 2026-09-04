@@ -6,7 +6,7 @@ Native=./fannkuch-redux
 
 NativeArg=
 
-Iter=10
+Iter=20
 
 WasmDir=
 

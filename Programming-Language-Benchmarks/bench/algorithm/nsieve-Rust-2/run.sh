@@ -6,7 +6,7 @@ Native=./nsieve
 
 NativeArg=
 
-Iter=5
+Iter=10
 
 WasmDir=
 
