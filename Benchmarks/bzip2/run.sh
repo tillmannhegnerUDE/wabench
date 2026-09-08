@@ -6,7 +6,7 @@ Native=./bzip2
 
 NativeArg="-k -f -z input_file"
 
-Iter=100
+Iter=1
 
 WasmDir=.
 
