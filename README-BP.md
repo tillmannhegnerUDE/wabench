@@ -47,3 +47,9 @@ $ docker cp <container-id>:/home/wabench/performanceResults.csv <directory on ho
 
 $ docker cp <container-id>:/home/wabench/memoryResults.csv <directory on host to save to>
 ```
+
+## Reproducing The Results Of The Final Submission
+
+When I ran WABench to get the results visible in my final submission, I started docker desktop on my linux machine, opened a terminal in the current directory (.../wabench/) and executed the following command:
+
+$ docker build --platform linux/amd64 -t wabench . && docker run wabench -o 2
